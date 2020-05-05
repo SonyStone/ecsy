@@ -1,6 +1,6 @@
 export { World } from './world';
-export { System } from './system';
-export { Not } from './not';
+export { System, SystemData } from './system';
+export { Not, Read, Write } from './data';
 export * from './component.interface'; // Component
 export { SystemStateComponent }  from './entity';
 export { TagComponent } from './tag-component';

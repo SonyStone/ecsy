@@ -8,12 +8,13 @@ const mode = 'development'
 
 const configs = {
   examples: 'examples',
-  canvas: 'examples/canvas',
+  // canvas: 'examples/canvas',
+  dev: 'examples/dev',
   'circles-boxes': 'examples/circles-boxes',
-  'babylon': 'examples/ball-example/babylon',
-  'three': 'examples/ball-example/three',
-  'factory': 'examples/factory',
-  'system-state-components': 'examples/system-state-components',
+  // 'babylon': 'examples/ball-example/babylon',
+  // 'three': 'examples/ball-example/three',
+  // 'factory': 'examples/factory',
+  // 'system-state-components': 'examples/system-state-components',
   'attraction-and-repulsion': 'examples/three-pix-droid/attraction-and-repulsion',
 }
 
@@ -50,7 +51,7 @@ module.exports = (env) => ({
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
-    port: 8080,
+    port: 8081,
     host: '0.0.0.0',
   },
   module: {
@@ -63,7 +64,13 @@ module.exports = (env) => ({
       },
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: [{
+          loader: 'ts-loader',
+          options: {
+            onlyCompileBundledFiles: true,
+            configFile: 'tsconfig.app.json',
+          },
+        }],
         exclude: /node_modules/,
       },
       {

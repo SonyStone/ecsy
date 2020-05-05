@@ -1,32 +1,23 @@
-import { System } from '@ecs';
+import { System, SystemData, Read, Entity } from '@ecs';
 
 import { Circle, Intersecting, Position } from '../components';
 import { intersection } from '../utils';
 
-export class IntersectionSystem extends System {
+@SystemData(
+  [Read(Circle), Read(Position), Read(Entity)]
+)
+export class IntersectionSystem implements System {
 
-  static queries = {
-    entities: { components: [Circle, Position] }
-  };
-
-  run() {
+  run(entities: [Circle, Position, Entity][]) {
 
     // console.log(`IntersectionSystem`, this, (this as any).executeTime);
 
-    const entities = this.queries.entities.results;
-
-    for (const entity of entities) {
+    for (const [circle, position, entity] of entities) {
       if (entity.hasComponent(Intersecting)) {
         entity.getMutableComponent(Intersecting).points.length = 0;
       }
 
-      const circle = entity.getComponent(Circle);
-      const position = entity.getMutableComponent(Position);
-
-      for (const entityB of entities) {
-        const circleB = entityB.getComponent(Circle);
-        const positionB = entityB.getMutableComponent(Position);
-
+      for (const [circleB, positionB] of entities) {
         const intersect = intersection(circle, position, circleB, positionB);
 
         if (intersect !== false) {
@@ -48,15 +39,15 @@ export class IntersectionSystem extends System {
   }
 
   stop() {
-    super.stop();
+    // super.stop();
 
     // Clean up interesection when stopping
-    const entities = this.queries.entities.results;
+    // const entities = this.queries.entities.results;
 
-    for (const entity of entities) {
-      if (entity.hasComponent(Intersecting)) {
-        entity.getMutableComponent(Intersecting).points.length = 0;
-      }
-    }
+    // for (const entity of entities) {
+    //   if (entity.hasComponent(Intersecting)) {
+    //     entity.getMutableComponent(Intersecting).points.length = 0;
+    //   }
+    // }
   }
 }

@@ -1,8 +1,6 @@
 import { World } from '../world';
 
-
 describe('system-manager', () => {
-
   it('registerSystems', () => {
     const world = new World();
 

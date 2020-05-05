@@ -1,4 +1,4 @@
-import { System } from '@ecs';
+import { System, Read, SystemData } from '@ecs';
 
 import {
   Acceleration,
@@ -10,31 +10,21 @@ import {
   Velocity,
 } from '../components';
 
-export class MovementSystem extends System {
+@SystemData(
+  [Read(Circle), Read(Velocity), Read(Acceleration), Read(Position)],
+  [Read(PerformanceСompensation), Read(CanvasContext), Read(DemoSettings)],
+)
+export class MovementSystem implements System {
 
-  static queries = {
-    entities: { components: [Circle, Velocity, Acceleration, Position] },
-    context: { components: [PerformanceСompensation, CanvasContext, DemoSettings], mandatory: true }
-  };
+  run(
+    entities: [Circle, Velocity, Acceleration, Position][],
+    [[{delta}, canvasContext, {speedMultiplier: multiplier}]]: [PerformanceСompensation, CanvasContext, DemoSettings][],
+  ) {
 
-  run() {
-
-    // console.log(`MovementSystem`, this, (this as any).executeTime);
-
-    const context = this.queries.context.results[0];
-    const canvasContext = context.getComponent(CanvasContext);
     const canvasWidth = canvasContext.width;
     const canvasHeight = canvasContext.height;
-    const delta = context.getComponent(PerformanceСompensation).delta;
-    const multiplier = context.getComponent(DemoSettings).speedMultiplier;
 
-    const entities = this.queries.entities.results;
-
-    for (const entity of entities) {
-      const circle = entity.getMutableComponent(Circle);
-      const velocity = entity.getMutableComponent(Velocity);
-      const acceleration = entity.getMutableComponent(Acceleration);
-      const position = entity.getMutableComponent(Position);
+    for (const [circle, velocity, acceleration, position] of entities) {
 
       position.x +=
         velocity.x * acceleration.x * delta * multiplier;

@@ -24,7 +24,7 @@ export interface Query {
 
 export interface SystemConstructor<T extends System> {
   new (...args: any): T;
-  queries?: Query;
+  queries?: any[];
 }
 
 

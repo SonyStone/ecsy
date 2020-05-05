@@ -1,102 +1,87 @@
-import { ComponentConstructor, Components } from '../component.interface';
+import { Component, ComponentConstructor } from '../component.interface';
+import { OperatorComponent, Operators } from '../data';
+import { some } from '../utils';
 import { Entity } from './entity';
-import { EventDispatcher } from './event-dispatcher';
 
 // tslint:disable:no-bitwise
 
-export enum QueryEvents {
-  ENTITY_ADDED,
-  ENTITY_REMOVED,
-  COMPONENT_CHANGED,
-}
-
 export class Query {
 
-  componentConstructors: ComponentConstructor[] = [];
-  notComponentConstructor: ComponentConstructor[] = [];
+  components: Component[] | Component[][];
+  private isChanged: boolean;
 
-  entities: Entity[] = [];
+  private componentConstructors: Map<ComponentConstructor, OperatorComponent>;
 
-  eventDispatcher = new EventDispatcher<QueryEvents>();
-
-  // This query is being used by a reactive system
-  reactive = false;
+  private entities = new Set<Entity>();
 
   /**
-   * @param componentConstructors List of types of components to query
+   * @param operatorComponents List of types of components to query
    */
   constructor(
-    componentConstructors: Components[],
+    operatorComponents: OperatorComponent[] | OperatorComponent,
     entities: Entity[],
     public key: string,
   ) {
 
-    componentConstructors.forEach((componentConstructor) => {
-      if (typeof componentConstructor === 'object') {
-        this.notComponentConstructor.push(componentConstructor.component);
-      } else {
-        this.componentConstructors.push(componentConstructor);
-      }
-    });
-
-    if (this.componentConstructors.length === 0) {
-      throw new Error('Can\'t create a query without components');
-    }
-
     // Fill the query with the existing entities
     for (const entity of entities) {
-      if (this.match(entity)) {
+      const isAddEntity = !some(operatorComponents)(({skipEntity}) => skipEntity(entity));
 
-        // @todo ??? this.addEntity(entity); => preventing the event to be generated
-        entity.queries.push(this);
-        this.entities.push(entity);
+      if (isAddEntity) {
+        this.addEntity(entity);
       }
+    }
+
+    this.componentConstructors = new Map(initComponentConstructorsMap(operatorComponents));
+
+    this.isChanged = true;
+  }
+
+  /**
+   * Add the entity only if:
+   * Component is in the query
+   * and Entity has ALL the components of the query
+   * and Entity is not already in the query
+   */
+  addEntityComponent(entity: Entity, componentConstructor: ComponentConstructor): void {
+    const operatorComponent = this.componentConstructors.get(componentConstructor);
+
+    if (!operatorComponent) {
+      return;
+    }
+
+    const isAddEntity = !some(operatorComponent)(({skipEntity}) => skipEntity(entity));
+
+    if (isAddEntity) {
+      this.addEntity(entity);
+    } else {
+      this.removeEntity(entity);
+    }
+
+    this.isChanged = true;
+  }
+
+  prepareComponents(): void {
+    if (this.isChanged) {
+      this.components = initComponents(this.componentConstructors, this.entities);
+      this.isChanged = false;
     }
   }
 
   /**
    * Add entity to this query
    */
-  addEntity(entity: Entity) {
-    entity.queries.push(this);
-    this.entities.push(entity);
-
-    this.eventDispatcher.dispatchEvent(QueryEvents.ENTITY_ADDED, entity);
+  private addEntity(entity: Entity) {
+    entity.queries.add(this);
+    this.entities.add(entity);
   }
 
   /**
    * Remove entity from this query
    */
-  removeEntity(entity: Entity) {
-    let index = this.entities.indexOf(entity);
-
-    if (~index) {
-      this.entities.splice(index, 1);
-
-      index = entity.queries.indexOf(this);
-      entity.queries.splice(index, 1);
-
-      this.eventDispatcher.dispatchEvent(QueryEvents.ENTITY_REMOVED, entity);
-    }
-  }
-
-  match(entity: Entity) {
-    return (
-      entity.hasAllComponents(this.componentConstructors) &&
-      !entity.hasAnyComponents(this.notComponentConstructor)
-    );
-  }
-
-  toJSON() {
-    return {
-      key: this.key,
-      reactive: this.reactive,
-      components: {
-        included: this.componentConstructors.map(C => C.name),
-        not: this.notComponentConstructor.map(C => C.name)
-      },
-      numEntities: this.entities.length
-    };
+  private removeEntity(entity: Entity) {
+    entity.queries.delete(this);
+    this.entities.delete(entity);
   }
 
   /**
@@ -104,9 +89,41 @@ export class Query {
    */
   stats() {
     return {
-      numComponents: this.componentConstructors.length,
-      numEntities: this.entities.length
+      numComponents: this.componentConstructors.size,
+      numEntities: this.entities.size
     };
   }
 }
 
+const initComponents = (componentConstructors: Map<ComponentConstructor, OperatorComponent>, entities: Set<Entity>): Component[] => {
+  const components = [];
+
+  for (const entity of entities) {
+    const temp = [];
+    for (const [componentConstructor, operatorComponent] of componentConstructors) {
+      if (operatorComponent.operator === Operators.Not) {
+        continue;
+      }
+
+      const component = entity.getComponent(componentConstructor);
+      if (component) {
+        temp.push(component);
+      }
+    }
+
+    if (temp.length === 1) {
+      components.push(temp[0]);
+    } else {
+      components.push(temp);
+    }
+  }
+
+  return components;
+}
+
+
+const initComponentConstructorsMap =
+  (componentConstructors: OperatorComponent[] | OperatorComponent): [ComponentConstructor, OperatorComponent][] =>
+    (Array.isArray(componentConstructors))
+      ? componentConstructors.map((componentConstructor) => [componentConstructor.component, componentConstructor])
+      : [[componentConstructors.component, componentConstructors]];

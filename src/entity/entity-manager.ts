@@ -1,20 +1,23 @@
 import { ComponentManager } from '../component';
-import { ComponentConstructor, Components } from '../component.interface';
+import { ComponentConstructor, Component } from '../component.interface';
 import { getName } from '../utils';
 import { ObjectPool } from '../utils/object-pool';
 import { Entity } from './entity';
-import { EventDispatcher } from './event-dispatcher';
-import { Query } from './query';
 import { QueryManager } from './query-manager';
 import { SystemStateComponent } from './system-state-component';
 
 // tslint:disable:no-bitwise
 
-export enum EntityManagerEvents {
-  ENTITY_CREATED,
-  ENTITY_REMOVED,
-  COMPONENT_ADDED,
-  COMPONENT_REMOVE,
+const setComponentValues = (component: Component, values: { [key: string]: any }) => {
+  if (component.copy) {
+    component.copy(values);
+  } else {
+    for (const name in values) {
+      if (values.hasOwnProperty(name)) {
+        component[name] = values[name];
+      }
+    }
+  }
 }
 
 /**
@@ -25,15 +28,12 @@ export class EntityManager {
   // All the entities in this instance
   entities: Entity[] = [];
 
-  eventDispatcher = new EventDispatcher<EntityManagerEvents>();
   entityPool = new ObjectPool<Entity>(Entity);
 
   // Deferred deletion
   entitiesWithComponentsToRemove = new Set<Entity>();
   entitiesToRemove: Entity[] = [];
   deferredRemovalEnabled = true;
-
-  numStateComponents = 0;
 
   constructor(
     private componentManager: ComponentManager,
@@ -48,8 +48,8 @@ export class EntityManager {
 
     entity.alive = true;
     entity.entityManager = this;
+
     this.entities.push(entity);
-    this.eventDispatcher.dispatchEvent(EntityManagerEvents.ENTITY_CREATED, entity);
 
     return entity;
   }
@@ -63,42 +63,21 @@ export class EntityManager {
    * @param values Optional values to replace the default attributes
    */
   entityAddComponent(entity: Entity, componentConstructor: ComponentConstructor, values?: { [key: string]: any }): void {
-
     if (entity.componentTypes.has(componentConstructor)) {
-
       return;
     }
 
     entity.componentTypes.add(componentConstructor);
 
-    if ((componentConstructor as any).__proto__ === SystemStateComponent) {
-      this.numStateComponents++;
-    }
-
-    const componentPool = this.componentManager.getComponentsPool(
-      componentConstructor
-    );
-
-    const componentFromPool = componentPool.aquire();
-
-    entity.components.set(componentConstructor.name, componentFromPool);
+    const component = this.componentManager.getComponent(componentConstructor);
 
     if (values) {
-      if (componentFromPool.copy) {
-        componentFromPool.copy(values);
-      } else {
-        for (const name in values) {
-          if (values.hasOwnProperty(name)) {
-            componentFromPool[name] = values[name];
-          }
-        }
-      }
+      setComponentValues(component, values)
     }
 
-    this.queryManager.onEntityComponentAdded(entity, componentConstructor);
-    this.componentManager.componentAddedToEntity(componentConstructor);
+    entity.components.set(componentConstructor.name, component);
 
-    this.eventDispatcher.dispatchEvent(EntityManagerEvents.COMPONENT_ADDED, entity, componentConstructor);
+    this.queryManager.onEntityComponentAdded(entity, componentConstructor);
   }
 
   /**
@@ -112,8 +91,6 @@ export class EntityManager {
 
       return;
     }
-
-    this.eventDispatcher.dispatchEvent(EntityManagerEvents.COMPONENT_REMOVE, entity, componentConstructor);
 
     if (immediately) {
 
@@ -137,15 +114,6 @@ export class EntityManager {
 
     // Check each indexed query to see if we need to remove it
     this.queryManager.onEntityComponentRemoved(entity, componentConstructor);
-
-    if ((componentConstructor as any).__proto__ === SystemStateComponent) {
-      this.numStateComponents--;
-
-      // Check if the entity was a ghost waiting for the last system state component to be removed
-      if (this.numStateComponents === 0 && !entity.alive) {
-        entity.remove();
-      }
-    }
   }
 
   entityRemoveComponentSync(entity: Entity, componentConstructor: ComponentConstructor): void {
@@ -181,17 +149,6 @@ export class EntityManager {
     if (!~index) { throw new Error('Tried to remove entity not in list'); }
 
     entity.alive = false;
-
-    if (this.numStateComponents === 0) {
-      // Remove from entity list
-      this.eventDispatcher.dispatchEvent(EntityManagerEvents.ENTITY_REMOVED, entity);
-      this.queryManager.onEntityRemoved(entity);
-      if (immediately === true) {
-        this.releaseEntity(entity, index);
-      } else {
-        this.entitiesToRemove.push(entity);
-      }
-    }
 
     this.entityRemoveAllComponents(entity, immediately);
   }
@@ -242,14 +199,6 @@ export class EntityManager {
     this.entitiesWithComponentsToRemove.clear();
   }
 
-  /**
-   * Get a query based on a list of components
-   * @param componentConstructors List of components that will form the query
-   */
-  getQuery(componentConstructors: Components[]): Query {
-    return this.queryManager.getQuery(componentConstructors, this.entities);
-  }
-
   // EXTRAS
 
   /**
@@ -265,12 +214,11 @@ export class EntityManager {
   stats() {
     const stats = {
       numEntities: this.entities.length,
-      numQueries: Object.keys(this.queryManager.queries).length,
+      numQueries: this.queryManager.queries.size,
       queries: this.queryManager.stats(),
       numComponentPool: Object.keys(this.componentManager.componentPool)
         .length,
       componentPool: {},
-      eventDispatcher: this.eventDispatcher.stats
     };
 
     for (const [cname, _] of this.componentManager.componentPool) {

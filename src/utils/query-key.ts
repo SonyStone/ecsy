@@ -1,21 +1,27 @@
-import { Components } from '../component.interface';
+import { ComponentConstructor } from '../component.interface';
+import { OperatorComponent, Operators } from '../data';
 import { getName } from './get-name';
+
+const createKey = (operator: Operators, component: ComponentConstructor) =>
+  `${operator}(${getName(component)})`;
 
 /**
  * Get a key from a list of components
  * @param Components Array of components to generate the key
  */
-export function queryKey(componentConstructor: Components[]) {
-  const names = [];
+export function queryKey(operatorComponents: OperatorComponent[] | OperatorComponent) {
+  if (Array.isArray(operatorComponents)) {
+    const names = [];
 
-  for (const T of componentConstructor) {
-    if (typeof T === 'object') {
-      const operator = T.operator === 'not' ? '!' : T.operator;
-      names.push(operator + getName(T.component));
-    } else {
-      names.push(getName(T));
+    for (const {operator, component} of operatorComponents) {
+      names.push(createKey(operator, component));
     }
-  }
 
-  return names.sort().join('-');
+    return names.join('-');
+  } else {
+    const {operator, component} = operatorComponents;
+
+    return createKey(operator, component)
+  }
 }
+

@@ -12,17 +12,16 @@ export class World {
 
   enabled = true;
 
-  eventQueues = {};
-
   lastTime = performance.now();
 
   /**
    * Create a new World.
    */
   constructor(
+    public queryManager = new QueryManager(),
     public componentsManager = new ComponentManager(),
-    public entityManager = new EntityManager(componentsManager, new QueryManager()),
-    public systemManager = new SystemManager(entityManager),
+    public entityManager = new EntityManager(componentsManager, queryManager),
+    public systemManager = new SystemManager(entityManager, queryManager),
   ) {}
 
   /**

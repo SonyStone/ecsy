@@ -1,13 +1,9 @@
 import { Component, ComponentConstructor, Constructor } from '../component.interface';
 import { Resettable } from '../resettable.interface';
 import { EntityManager } from './entity-manager';
-import { Query, QueryEvents } from './query';
-import { wrapImmutableComponent } from './wrap-immutable-component';
+import { Query } from './query';
 
 // tslint:disable:no-bitwise
-
-// @todo Take this out from there or use ENV
-const DEBUG = false;
 
 let nextId = 0;
 
@@ -24,7 +20,7 @@ export class Entity implements Resettable {
   componentsToRemove = new Map<string, Component>();
 
   // Queries where the entity is added
-  queries: Query[] = [];
+  queries = new Set<Query>();
 
   // Used for deferred removal
   componentTypesToRemove = new Set<ComponentConstructor>();
@@ -37,6 +33,12 @@ export class Entity implements Resettable {
 
   // COMPONENTS
 
+  addComponent(componentConstructor: ComponentConstructor, values?: { [key: string]: any }): this {
+    this.entityManager.entityAddComponent(this, componentConstructor, values);
+
+    return this;
+  }
+
   getComponent<T>(componentConstructor: Constructor<T>, includeRemoved?: boolean): T {
     let component = this.components.get(componentConstructor.name) as T;
 
@@ -44,7 +46,7 @@ export class Entity implements Resettable {
       component = this.componentsToRemove.get(componentConstructor.name) as T;
     }
 
-    return DEBUG ? wrapImmutableComponent(component) : component;
+    return component;
   }
 
   getMutableComponent<T>(componentConstructor: Constructor<T> ): T {
@@ -53,13 +55,13 @@ export class Entity implements Resettable {
     for (const query of this.queries) {
 
       // @todo accelerate this check. Maybe having query._Components as an object
-      if (query.reactive && query.componentConstructors.indexOf(componentConstructor) !== -1) {
-        query.eventDispatcher.dispatchEvent(
-          QueryEvents.COMPONENT_CHANGED,
-          this,
-          component
-        );
-      }
+      // if (query.componentConstructors.has(componentConstructor)) {
+        // query.eventDispatcher.dispatchEvent(
+        //   QueryEvents.COMPONENT_CHANGED,
+        //   this,
+        //   component
+        // );
+      // }
     }
 
     return component;
@@ -85,12 +87,6 @@ export class Entity implements Resettable {
   }
 
 
-  addComponent(componentConstructor: ComponentConstructor, values?: { [key: string]: any }): this {
-    this.entityManager.entityAddComponent(this, componentConstructor, values);
-
-    return this;
-  }
-
   /**
    * This will mark the component to be removed and will populate all the queues from the
    * systems that are listening to that event, but the component itself won't be disposed
@@ -114,8 +110,8 @@ export class Entity implements Resettable {
     return this.componentTypesToRemove.has(componentConstructor);
   }
 
-  hasAllComponents(componentConstructors: ComponentConstructor[]): boolean {
-    for (const component of componentConstructors) {
+  hasAllComponents(componentConstructors: Map<ComponentConstructor, any>): boolean {
+    for (const [component] of componentConstructors) {
       if (!this.hasComponent(component)) { return false; }
     }
 
@@ -141,7 +137,7 @@ export class Entity implements Resettable {
     this.id = nextId++;
     this.entityManager = null;
     this.componentTypes.clear();
-    this.queries.length = 0;
+    this.queries.clear();
     this.components.clear();
   }
 

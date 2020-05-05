@@ -7,21 +7,21 @@ export const clearEvents = (system: System) => {
 
       const query = system.queries[queryName];
 
-      if (query.added) {
-        query.added.length = 0;
-      }
+      // if (query.added) {
+      //   query.added.length = 0;
+      // }
 
-      if (query.removed) {
-        query.removed.length = 0;
-      }
+      // if (query.removed) {
+      //   query.removed.length = 0;
+      // }
 
-      if (query.changed) {
-        if (Array.isArray(query.changed)) {
+      // if (query.changed) {
+      //   if (Array.isArray(query.changed)) {
 
-          query.changed.length = 0;
+      //     query.changed.length = 0;
 
-        }
-      }
+      //   }
+      // }
     }
   }
 };

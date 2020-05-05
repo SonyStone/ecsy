@@ -1,5 +1,5 @@
+import { OperatorComponent } from './data';
 import { Resettable } from './resettable.interface';
-import { NotComponent } from './not';
 
 export interface Component extends Resettable {
   [key: string]: any;
@@ -10,4 +10,4 @@ export type ComponentConstructor = new () => Component;
 
 export type Constructor<T> = new () => T;
 
-export type Components = ComponentConstructor | NotComponent;
+export type Components = OperatorComponent;

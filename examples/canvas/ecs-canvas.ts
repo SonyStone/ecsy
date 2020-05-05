@@ -114,7 +114,7 @@ export class EcsCanvas {
 
       world.run();
 
-      requestAnimationFrame(update);
+      // requestAnimationFrame(update);
       if (timeOut > 0) {
         timeOut--;
       }

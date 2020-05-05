@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "experimentalDecorators": true,
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -22,5 +23,5 @@
     "paths": {
       "@ecs": ["src/index.ts"]
     }
-  },
+  }
 }

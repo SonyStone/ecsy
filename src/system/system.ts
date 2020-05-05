@@ -1,5 +1,6 @@
-import { Query } from '../system.interface';
-import { Entity } from 'src/entity';
+import { OperatorComponent } from '../data';
+import { Entity } from '../entity';
+import { Query } from '../entity/query';
 
 export interface ResultQuery {
   [key: string]: {
@@ -22,27 +23,29 @@ export interface ResultQuery {
   }
 }
 
+type QueriesConstructor = (OperatorComponent[] | OperatorComponent)[]
+
 /**
  * A system that manipulates entities in the world.
  * Every run systems are executed and they create, remove or modify entities and components.
  */
 export abstract class System {
 
-  static queries?: Query;
+  static queries?: QueriesConstructor;
 
   /**
    * Whether the system will execute during the world tick.
    */
-  enabled = true;
-  initialized = true;
+  enabled? = true;
+  initialized? = true;
 
-  queriesOther = {};
-  queries: ResultQuery = {};
+  queriesOther? = {};
+  queries?: Query[];
 
-  mandatoryQueries = [];
+  mandatoryQueries? = [];
 
-  priority = 0;
-  order = 0;
+  priority? = 0;
+  order? = 0;
 
   executeTime?: number;
 
@@ -51,7 +54,7 @@ export abstract class System {
    * Usually it will be used to loop through the lists of entities from each query and
    * process the value of theirs components.
    */
-  run?(): void;
+  run(...queries): void {};
 
   /**
    * This function is called when the system is registered in a world (Calling `world.registerSystem`)
@@ -62,14 +65,24 @@ export abstract class System {
   /**
    * Resume execution of this system.
    */
-  play() {
+  play?() {
     this.enabled = true;
   }
 
   /**
    * Stop execution of this system.
    */
-  stop() {
+  stop?() {
     this.enabled = false;
+  }
+}
+
+
+export function SystemData(...queries: QueriesConstructor) {
+  return <T extends typeof System>(constructor: T) => {
+    constructor.queries = queries;
+    constructor.prototype.queries = [];
+
+    return constructor;
   }
 }

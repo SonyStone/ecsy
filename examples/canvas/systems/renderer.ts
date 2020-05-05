@@ -1,17 +1,14 @@
-import { System } from '@ecs';
+import { System, SystemData, Read } from '@ecs';
 
 import { CanvasContext, Circle, Intersecting, Position } from '../components';
 import { drawLine, fillCircle } from '../utils';
 
-export class RendererBackground extends System {
-  static queries = {
-    context: { components: [CanvasContext], mandatory: true }
-  };
+@SystemData(
+  Read(CanvasContext),
+)
+export class RendererBackground implements System {
+  run([canvasComponent]: CanvasContext[]) {
 
-  run() {
-
-    const context = this.queries.context.results[0];
-    const canvasComponent = context.getComponent(CanvasContext);
     const ctx: CanvasRenderingContext2D = canvasComponent.ctx;
     const canvasWidth = canvasComponent.width;
     const canvasHeight = canvasComponent.height;
@@ -21,30 +18,20 @@ export class RendererBackground extends System {
   }
 }
 
-export class RendererCircles extends System {
+@SystemData(
+  [Read(Circle), Read(Position)],
+  Read(CanvasContext),
+)
+export class RendererCircles implements System {
 
-  static queries = {
-    circles: { components: [Circle, Position] },
-    context: { components: [CanvasContext], mandatory: true }
-  };
+  run(components: [Circle, Position][], [{ ctx }]: CanvasContext[]) {
 
-  run() {
-
-    const context = this.queries.context.results[0];
-    const canvasComponent = context.getComponent(CanvasContext);
-    const ctx: CanvasRenderingContext2D = canvasComponent.ctx;
-
-    const circles = this.queries.circles.results;
-
-    for (const circle of circles) {
-      const component = circle.getComponent(Circle);
-      const position = circle.getMutableComponent(Position);
-
+    for (const [circle, position] of components) {
       ctx.beginPath();
       ctx.arc(
         position.x,
         position.y,
-        component.radius,
+        circle.radius,
         0,
         2 * Math.PI,
         false
@@ -56,23 +43,15 @@ export class RendererCircles extends System {
   }
 }
 
-export class RendererIntersecting extends System {
+@SystemData(
+  Read(Intersecting),
+  Read(CanvasContext),
+)
+export class RendererIntersecting implements System {
 
-  static queries = {
-    intersectingCircles: { components: [Intersecting] },
-    context: { components: [CanvasContext], mandatory: true }
-  };
+  run(intersects: Intersecting[], [{ ctx }]: CanvasContext[]) {
 
-  run() {
-
-    const context = this.queries.context.results[0];
-    const canvasComponent = context.getComponent(CanvasContext);
-    const ctx: CanvasRenderingContext2D = canvasComponent.ctx;
-
-    const intersectingCircles = this.queries.intersectingCircles.results;
-
-    for (const intersectingCircle of intersectingCircles) {
-      const intersect = intersectingCircle.getComponent(Intersecting);
+    for (const intersect of intersects) {
 
       for (const points of intersect.points) {
         ctx.lineWidth = 2;

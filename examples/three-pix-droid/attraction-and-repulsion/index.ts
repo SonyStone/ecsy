@@ -1,6 +1,6 @@
 import './index.scss';
 
-import { System, World } from '@ecs';
+import { System, World, SystemData, Read } from '@ecs';
 
 import { random } from './random';
 import { Vector2 } from './math';
@@ -77,65 +77,57 @@ class PerformanceСompensation {
 // ----------------------
 
 // UpdateDotsSystem
-class UpdateDotsSystem extends System {
-
-  // Define a query of entities that have "Velocity" and "Position" components
-  static queries = {
-    entities: { components: [Dot] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  }
-
+@SystemData(
+  Read(Dot),
+  Read(PerformanceСompensation),
+)
+class UpdateDotsSystem implements System {
   // This method will get called on every frame by default
-  run() {
-    // const delta = context.getComponent(PerformanceСompensation).delta;
-
-    const entities = this.queries.entities.results;
+  run(dots: Dot[]) {
 
     // Iterate through all the entities on the query
-    for (let i = 1; i < entities.length; i++) {
+    for (let i = 1; i < dots.length; i++) {
       const acc = {x: 0, y: 0};
-      const a = entities[i].getMutableComponent(Dot);
+      const dotA = dots[i];
 
-      for (let j = 0; j < entities.length; j++) {
+      for (let j = 0; j < dots.length; j++) {
         if (i === j) {
           continue;
         }
 
-        const b = entities[j].getMutableComponent(Dot);
+        const dotB = dots[j];
 
-        const delta = {x: b.pos.x - a.pos.x, y: b.pos.y - a.pos.y}
+        const delta = {x: dotB.pos.x - dotA.pos.x, y: dotB.pos.y - dotA.pos.y}
         const dist = Math.sqrt( delta.x * delta.x + delta.y * delta.y) || 1;
-        let force  = (dist - config.sphereRad) / dist * b.mass;
+        let force  = (dist - config.sphereRad) / dist * dotB.mass;
 
         if (j === 0) {
           const alpha = config.mouseSize / dist;
-          a.color = `rgba(250, 10, 30, ${alpha})`;
+          dotA.color = `rgba(250, 10, 30, ${alpha})`;
 
           dist < config.mouseSize
-            ? force = (dist - config.mouseSize) * b.mass
-            : force = a.mass;
+            ? force = (dist - config.mouseSize) * dotB.mass
+            : force = dotA.mass;
         }
 
         acc.x += delta.x * force;
         acc.y += delta.y * force;
       }
 
-      a.vel.x = a.vel.x * config.smooth + acc.x * a.mass;
-      a.vel.y = a.vel.y * config.smooth + acc.y * a.mass;
+      dotA.vel.x = dotA.vel.x * config.smooth + acc.x * dotA.mass;
+      dotA.vel.y = dotA.vel.y * config.smooth + acc.y * dotA.mass;
     }
 
   }
 }
 
-class AddDotsSystem extends System {
-  static queries = {
-    context: { components: [MouseClick, MousePosition], mandatory: true }
-  };
-
-  run() {
-    const context = this.queries.context.results[0];
-    const down = context.getComponent(MouseClick).down;
-    const mouse = context.getComponent(MousePosition);
+@SystemData(
+  Read(MouseClick),
+  Read(MousePosition),
+)
+class AddDotsSystem implements System {
+  run([mouseClick]: MouseClick[], [mouse]: MousePosition[]) {
+    const down = mouseClick.down;
 
     if (down) {
       world.createEntity()
@@ -144,57 +136,46 @@ class AddDotsSystem extends System {
   }
 }
 
-class UpadateMouseClickSystem extends System {
-  static queries = {
-    context: { components: [MouseClick], mandatory: true }
-  };
-
-  run() {
-    const context = this.queries.context.results[0];
-    const mouse = context.getMutableComponent(MouseClick);
-
+@SystemData(
+  Read(MouseClick),
+)
+class UpadateMouseClickSystem implements System {
+  run([mouse]: MouseClick[]) {
     mouse.down = gDown;
   }
 }
 
-class UpadateMousePositionSystem extends System {
-  static queries = {
-    context: { components: [MousePosition], mandatory: true }
-  };
-
-  run() {
-    const context = this.queries.context.results[0];
-    const mouse = context.getMutableComponent(MousePosition);
-
+@SystemData(
+  Read(MousePosition),
+)
+class UpadateMousePositionSystem implements System {
+  run([mouse]: MousePosition[]) {
     [mouse.x, mouse.y] = [gMouse.x, gMouse.y];
   }
 }
 
-export class RendererBackground extends System {
-
+@SystemData(
+  Read(MousePosition),
+)
+export class RendererBackground implements System {
   run() {
     ctx.fillStyle = 'rgb(21, 25, 46)';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
   }
 }
 
-class RendererDotsSystem extends System {
-
-  static queries = {
-    entities: { components: [Dot] },
-    context: { components: [MousePosition], mandatory: true }
-  };
+@SystemData(
+  Read(Dot),
+  Read(MousePosition),
+)
+class RendererDotsSystem implements System {
 
   createCircle = draw(ctx).createCircle;
 
-  run() {
-    const context = this.queries.context.results[0];
-    const entities = this.queries.entities.results;
+  run(dots: Dot[], [mouse]: MousePosition[]) {
 
-    const mouse = context.getComponent(MousePosition);
-
-    for (let i = 0; i < entities.length; i++) {
-      const dot = entities[i].getMutableComponent(Dot);
+    for (let i = 0; i < dots.length; i++) {
+      const dot = dots[i];
 
       if (i === 0) {
         dot.pos.x = mouse.x;
@@ -213,13 +194,6 @@ class RendererDotsSystem extends System {
 
 // Create world and register the systems on it
 const world = new World();
-world
-  .registerSystem(UpadateMousePositionSystem)
-  .registerSystem(UpadateMouseClickSystem)
-  .registerSystem(AddDotsSystem)
-  .registerSystem(UpdateDotsSystem)
-  .registerSystem(RendererBackground)
-  .registerSystem(RendererDotsSystem);
 
 // Used for singleton components
 const singletonEntity = world.createEntity()
@@ -231,8 +205,17 @@ const singletonEntity = world.createEntity()
 world.createEntity()
   .addComponent(Dot, { rad: config.bigDotRad })
 
+world
+  .registerSystem(UpadateMousePositionSystem)
+  .registerSystem(UpadateMouseClickSystem)
+  .registerSystem(AddDotsSystem)
+  .registerSystem(UpdateDotsSystem)
+  .registerSystem(RendererBackground)
+  .registerSystem(RendererDotsSystem);
+
 const performanceСompensation = singletonEntity.getMutableComponent(PerformanceСompensation);
 
+console.log(world);
 // Run!
 function run() {
   // Compute delta and elapsed time

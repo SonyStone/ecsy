@@ -1,6 +1,6 @@
 import './index.scss';
 
-import { System, World } from '@ecs';
+import { System, World, SystemData, Read } from '@ecs';
 
 const NUM_ELEMENTS = 600;
 const SPEED_MULTIPLIER = 0.1;
@@ -70,24 +70,19 @@ class PerformanceСompensation {
 // ----------------------
 
 // MovableSystem
+@SystemData(
+  // Define a query of entities that have "Velocity" and "Position" components
+  [Read(Velocity), Read(Position)],
+  Read(PerformanceСompensation),
+)
 class MovableSystem extends System {
 
-  // Define a query of entities that have "Velocity" and "Position" components
-  static queries = {
-    moving: {
-      components: [Velocity, Position]
-    },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  }
-
   // This method will get called on every frame by default
-  run() {
-    const context = this.queries.context.results[0];
-    const delta = context.getComponent(PerformanceСompensation).delta;
+  run(movings: [Velocity, Position][], [{ delta }]: PerformanceСompensation[]) {
+
+    // console.log(movings);
     // Iterate through all the entities on the query
-    this.queries.moving.results.forEach(entity => {
-      const velocity = entity.getComponent(Velocity);
-      const position = entity.getMutableComponent(Position);
+    for (const [velocity, position] of movings) {
 
       position.x += velocity.x * delta;
       position.y += velocity.y * delta;
@@ -96,22 +91,18 @@ class MovableSystem extends System {
       if (position.x < - SHAPE_HALF_SIZE) position.x = canvasWidth + SHAPE_HALF_SIZE;
       if (position.y > canvasHeight + SHAPE_HALF_SIZE) position.y = - SHAPE_HALF_SIZE;
       if (position.y < - SHAPE_HALF_SIZE) position.y = canvasHeight + SHAPE_HALF_SIZE;
-    });
+    };
   }
 }
 
-
-
 // RendererSystem
+@SystemData(
+  [Read(Position), Read(Shape), Read(Renderable)],
+)
 class RendererSystem extends System {
 
-  // Define a query of entities that have "Renderable" and "Shape" components
-  static queries = {
-    renderables: { components: [Renderable, Shape] }
-  }
-
   // This method will get called on every frame by default
-  run() {
+  run(renderables: [Position, Shape, Renderable][]) {
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = '#ffffff';
@@ -119,15 +110,14 @@ class RendererSystem extends System {
     // ctx.globalAlpha = 0.6;
 
     // Iterate through all the entities on the query
-    this.queries.renderables.results.forEach(entity => {
-      const shape = entity.getComponent(Shape);
-      const position = entity.getComponent(Position);
+    for (const [position, shape] of renderables) {
+
       if (shape.primitive === 'box') {
         this.drawBox(position);
       } else {
         this.drawCircle(position);
       }
-    });
+    };
   }
 
   drawCircle(position) {
