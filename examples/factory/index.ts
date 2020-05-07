@@ -1,4 +1,4 @@
-import { Not, System, TagComponent, World } from '@ecs';
+import { Not, System, TagComponent, World, SystemData, Read, Entity } from '@ecs';
 
 const textarea = document.querySelector('textarea');
 function log(msg) {
@@ -50,33 +50,32 @@ export class PerformanceСompensation {
 }
 
 // Systems
-class NameSystem extends System {
-  static queries = {
-    entities: { components: [NPC, Not(Name)] }
-  };
-
-  run() {
-    this.queries.entities.results.forEach(entity => {
+@SystemData(
+  [Read(Entity), Read(NPC), Not(Name)],
+)
+class NameSystem implements System {
+  run(entities: [Entity, NPC][]) {
+    for (const [entity, npc] of entities) {
       const name = randomFromArray(names);
       log(`Added name '${name}' to player id=${entity.id}`);
       entity.addComponent(Name, {value: name});
-    });
+    }
   }
 }
 
-class TshirtSystem extends System {
+@SystemData(
+  [Read(Entity), Read(NPC), Not(Tshirt)],
+)
+class TshirtSystem implements System {
 
-  static queries = {
-    entities: { components: [NPC, Not(Tshirt)] }
-  };
 
-  run() {
-    this.queries.entities.results.forEach(entity => {
+  run(entities: [Entity, NPC][]) {
+    for (const [entity] of entities) {
       const size = randomFromArray(sizes);
       const color = randomFromArray(colors);
       log(`Added '${color}' '${size}' tshirt to player id=${entity.id}`);
       entity.addComponent(Tshirt, {color, size});
-    });
+    }
   }
 }
 
@@ -84,9 +83,6 @@ class TshirtSystem extends System {
 const world = new World();
 
 world
-  .registerComponent(NPC)
-  .registerComponent(Tshirt)
-  .registerComponent(Name)
   .registerSystem(NameSystem)
   .registerSystem(TshirtSystem)
 

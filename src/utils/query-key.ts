@@ -1,8 +1,8 @@
-import { ComponentConstructor } from '../component.interface';
+import { Component, Constructor } from '../component.interface';
 import { OperatorComponent, Operators } from '../data';
 import { getName } from './get-name';
 
-const createKey = (operator: Operators, component: ComponentConstructor) =>
+const createKey = (operator: Operators, component: Constructor<Component>) =>
   `${operator}(${getName(component)})`;
 
 /**

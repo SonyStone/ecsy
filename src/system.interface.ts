@@ -1,9 +1,9 @@
-import { Components } from './component.interface';
+import { OperatorComponent } from './data';
 import { System } from './system';
 
 export interface Query {
   [key: string]: {
-    components: Components[];
+    components: OperatorComponent[];
     mandatory?: boolean;
     listen?: {
       /**
@@ -17,7 +17,7 @@ export interface Query {
       /**
        * Get access to all the entities which Box or Transform components have changed since the last call
        */
-      changed?: boolean | Components[];
+      changed?: boolean | OperatorComponent[];
     };
   };
 }

@@ -1,18 +1,18 @@
-import { Component, ComponentConstructor } from '../component.interface';
-import { ObjectPool } from '../utils/object-pool';
+import { Component, Constructor } from '../component.interface';
 import { Pool } from '../pool.interface';
+import { ObjectPool } from '../utils/object-pool';
 import { DummyObjectPool } from './dummy-object-pool';
 
 export class ComponentManager {
-  readonly componentPool = new Map<ComponentConstructor, Pool<Component>>();
+  readonly componentPool = new Map<Constructor<Component>, Pool<Component>>();
 
-  getComponent(componentConstructor: ComponentConstructor): Component {
+  getComponent(componentConstructor: Constructor<Component>): Component {
     const componentsPool = this.getComponentsPool(componentConstructor);
 
     return componentsPool.aquire();
   }
 
-  registerComponent(componentConstructor: ComponentConstructor): void {
+  registerComponent(componentConstructor: Constructor<Component>): void {
     if (!this.componentPool.has(componentConstructor)) {
 
       if (componentConstructor.prototype.reset) {
@@ -29,11 +29,11 @@ export class ComponentManager {
     }
   }
 
-  removeComponent(componentConstructor: ComponentConstructor): void {
+  removeComponent(componentConstructor: Constructor<Component>): void {
     this.componentPool.delete(componentConstructor);
   }
 
-  private getComponentsPool(componentConstructor: ComponentConstructor): Pool<Component> {
+  private getComponentsPool(componentConstructor: Constructor<Component>): Pool<Component> {
     this.registerComponent(componentConstructor);
 
     return this.componentPool.get(componentConstructor);

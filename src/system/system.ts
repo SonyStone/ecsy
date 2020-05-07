@@ -23,7 +23,7 @@ export interface ResultQuery {
   }
 }
 
-type QueriesConstructor = (OperatorComponent[] | OperatorComponent)[]
+export type QueriesConstructor = (OperatorComponent[] | OperatorComponent)[]
 
 /**
  * A system that manipulates entities in the world.

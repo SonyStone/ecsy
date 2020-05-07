@@ -1,7 +1,7 @@
-import { ComponentConstructor } from '../component.interface';
+import { Component as IComponent, Constructor } from '../component.interface';
 import { inferType } from './infer-type';
 
-export function createComponentClass(schema: any, name: string): ComponentConstructor {
+export function createComponentClass(schema: any, name: string): Constructor<IComponent> {
   // var Component = new Function(`return function ${name}() {}`)();
 
   for (const key in schema) {

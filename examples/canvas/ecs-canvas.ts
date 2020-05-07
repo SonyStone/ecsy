@@ -1,4 +1,4 @@
-import { createComponentClass, createType, World } from '@ecs';
+import { World } from '@ecs';
 
 import {
   Acceleration,
@@ -9,8 +9,7 @@ import {
   Position,
   Velocity,
 } from './components';
-import { Vector2 } from './math';
-import { MovementSystem, IntersectionSystem, RendererCircles, RendererIntersecting, RendererBackground } from './systems';
+import { IntersectionSystem, MovementSystem, RendererBackground, RendererCircles, RendererIntersecting } from './systems';
 import { random } from './utils';
 
 export class EcsCanvas {
@@ -28,35 +27,7 @@ export class EcsCanvas {
   run() {
     const world = new World();
 
-    const CustomVector2 = createType({
-      baseType: Vector2,
-      create: (defaultValue) => defaultValue
-        ? new Vector2(defaultValue)
-        : new Vector2(),
-      reset: (src, key, defaultValue) => defaultValue
-        ? src[key].copy(defaultValue)
-        : src[key].set(0, 0),
-      clear: (src, key) => src[key].set(0, 0),
-    });
-
-    const ExampleComponent = createComponentClass({
-      number:  { default: 0.5 },
-      string:  { default: 'foo' },
-      bool:    { default: true },
-      array:   { default: [1, 2, 3] },
-      vector2: { default: new Vector2(3, 4), type: CustomVector2 }
-    }, 'ExampleComponent');
-
-    console.log(`ExampleComponent :::::::`);
-    console.dir(ExampleComponent);
-    console.log(new ExampleComponent());
-
     world
-      // .registerComponent(Circle)
-      // .registerComponent(Velocity)
-      // .registerComponent(Acceleration)
-      // .registerComponent(Position)
-      // .registerComponent(Intersecting)
       .registerSystem(MovementSystem)
       .registerSystem(IntersectionSystem)
       .registerSystem(RendererBackground)
@@ -81,7 +52,7 @@ export class EcsCanvas {
     canvasComponent.width = canvas.width;
     canvasComponent.height = canvas.height;
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 200; i++) {
       world.createEntity()
         .addComponent(Circle, { radius: random(10, 50) })
         .addComponent(Velocity, {
@@ -114,7 +85,7 @@ export class EcsCanvas {
 
       world.run();
 
-      // requestAnimationFrame(update);
+      requestAnimationFrame(update);
       if (timeOut > 0) {
         timeOut--;
       }

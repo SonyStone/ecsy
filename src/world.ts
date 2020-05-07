@@ -1,5 +1,5 @@
 import { ComponentManager } from './component';
-import { ComponentConstructor } from './component.interface';
+import { Component, Constructor } from './component.interface';
 import { Entity, EntityManager } from './entity';
 import { QueryManager } from './entity/query-manager';
 import { System, SystemManager } from './system';
@@ -28,7 +28,7 @@ export class World {
    * Register a component.
    * @param component Type of component to register
    */
-  registerComponent(component: ComponentConstructor): this {
+  registerComponent(component: Constructor<Component>): this {
     this.componentsManager.registerComponent(component);
 
     return this;

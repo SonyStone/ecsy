@@ -8,14 +8,16 @@ const mode = 'development'
 
 const configs = {
   examples: 'examples',
-  // canvas: 'examples/canvas',
+  canvas: 'examples/canvas',
   dev: 'examples/dev',
   'circles-boxes': 'examples/circles-boxes',
-  // 'babylon': 'examples/ball-example/babylon',
+  'babylon': 'examples/ball-example/babylon',
   // 'three': 'examples/ball-example/three',
-  // 'factory': 'examples/factory',
+  'factory': 'examples/factory',
   // 'system-state-components': 'examples/system-state-components',
   'attraction-and-repulsion': 'examples/three-pix-droid/attraction-and-repulsion',
+  'particles-with-connection': 'examples/three-pix-droid/particles-with-connection',
+  'stardust-parallax-effect': 'examples/three-pix-droid/stardust-parallax-effect',
 }
 
 const projects = {

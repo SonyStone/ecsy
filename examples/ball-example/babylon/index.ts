@@ -27,11 +27,11 @@ const world = new World();
 
 world.systemManager
   .registerSystem(RotatingSystem)
-  .registerSystem(PulsatingColorSystem)
-  .registerSystem(PulsatingScaleSystem)
-  .registerSystem(TimeoutSystem)
-  .registerSystem(ColliderSystem)
-  .registerSystem(MovingSystem);
+  // .registerSystem(PulsatingColorSystem)
+  // .registerSystem(PulsatingScaleSystem)
+  // .registerSystem(TimeoutSystem)
+  // .registerSystem(ColliderSystem)
+  // .registerSystem(MovingSystem);
 
 const singletonEntity = world.createEntity()
   .addComponent(PerformanceСompensation);
@@ -53,7 +53,7 @@ function randomSpherePoint(radius) {
 
 
 function init() {
-  const numObjects = 10000;
+  const numObjects = 1;
   const size = 0.2;
 
   const canvas = document.getElementById('renderCanvas');
@@ -73,10 +73,11 @@ function init() {
   objMoving.material = material;
 
   const radius = 10;
-  const entity = world.entityManager.createEntity();
-  entity.addComponent(Collider);
-  entity.addComponent(Object3D, { object: objMoving });
-  entity.addComponent(Rotating, { rotatingSpeed: 0.5 });
+  world.entityManager.createEntity()
+    .addComponent(Collider)
+    .addComponent(Object3D, { object: objMoving })
+    .addComponent(Rotating, { rotatingSpeed: 0.5 });
+
   objMoving.setPivotMatrix(BABYLON.Matrix.Translation(0, 0, radius), false);
 
   const states = [];
@@ -91,8 +92,6 @@ function init() {
   rootMesh.instancedBuffers.color = new BABYLON.Color4(1, 0, 0, 1);
 
   for (let i = 0; i < numObjects; i++) {
-    const entity2 = world.entityManager.createEntity();
-
     const mesh = rootMesh.createInstance('box');
     mesh.instancedBuffers.color = new BABYLON.Color4(1, 0, 0, 1);
     mesh.alwaysSelectAsActiveMesh = true;
@@ -108,15 +107,15 @@ function init() {
 
     states.push(state);
 
-    entity2.addComponent(Object3D, { object: mesh });
-    entity2.addComponent(PulsatingColor, { offset: i });
-    entity2.addComponent(PulsatingScale, { offset: i });
+    const entity2 = world.entityManager.createEntity()
+      .addComponent(Object3D, { object: mesh })
+      .addComponent(PulsatingColor, { offset: i })
+      .addComponent(PulsatingScale, { offset: i })
+      .addComponent(Collisionable);
 
     if (Math.random() > 0.5) {
       entity2.addComponent(Moving, { offset: i });
     }
-
-    entity2.addComponent(Collisionable);
   }
 
   scene.freezeActiveMeshes();
@@ -135,4 +134,6 @@ function init() {
 
     world.run();
   });
+
+  console.log(`world`, world);
 }

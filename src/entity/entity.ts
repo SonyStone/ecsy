@@ -1,5 +1,4 @@
-import { Component, ComponentConstructor, Constructor } from '../component.interface';
-import { Resettable } from '../resettable.interface';
+import { Component, Constructor } from '../component.interface';
 import { EntityManager } from './entity-manager';
 import { Query } from './query';
 
@@ -7,12 +6,12 @@ import { Query } from './query';
 
 let nextId = 0;
 
-export class Entity implements Resettable {
+export class Entity implements Component {
   // Unique ID for this entity
   id = nextId++;
 
   // List of components types the entity has
-  componentTypes = new Set<ComponentConstructor>();
+  componentTypes = new Set<Constructor<Component>>();
 
   // Instance of the components
   components = new Map<string, Component>();
@@ -23,7 +22,7 @@ export class Entity implements Resettable {
   queries = new Set<Query>();
 
   // Used for deferred removal
-  componentTypesToRemove = new Set<ComponentConstructor>();
+  componentTypesToRemove = new Set<Constructor<Component>>();
 
   alive = false;
 
@@ -33,7 +32,7 @@ export class Entity implements Resettable {
 
   // COMPONENTS
 
-  addComponent(componentConstructor: ComponentConstructor, values?: { [key: string]: any }): this {
+  addComponent(componentConstructor: Constructor<Component>, values?: { [key: string]: any }): this {
     this.entityManager.entityAddComponent(this, componentConstructor, values);
 
     return this;
@@ -70,7 +69,7 @@ export class Entity implements Resettable {
   /**
    * Once a component is removed from an entity, it is possible to access its contents
    */
-  getRemovedComponent(componentConstructor: ComponentConstructor): Component {
+  getRemovedComponent(componentConstructor: Constructor<Component>): Component {
     return this.componentsToRemove.get(componentConstructor.name);
   }
 
@@ -82,7 +81,7 @@ export class Entity implements Resettable {
     return this.componentsToRemove;
   }
 
-  getComponentTypes(): Set<ComponentConstructor> {
+  getComponentTypes(): Set<Constructor<Component>> {
     return this.componentTypes;
   }
 
@@ -93,24 +92,24 @@ export class Entity implements Resettable {
    * until the end of the frame, we call it deferred removal. This is done so systems that
    * need to react to it can still access the data of the components.
    */
-  removeComponent(componentConstructor: ComponentConstructor, forceRemove?: boolean): this {
+  removeComponent(componentConstructor: Constructor<Component>, forceRemove?: boolean): this {
     this.entityManager.entityRemoveComponent(this, componentConstructor, forceRemove);
 
     return this;
   }
 
-  hasComponent(componentConstructor: ComponentConstructor, includeRemoved?: boolean): boolean {
+  hasComponent(componentConstructor: Constructor<Component>, includeRemoved?: boolean): boolean {
     return (
       this.componentTypes.has(componentConstructor) ||
       (includeRemoved === true && this.hasRemovedComponent(componentConstructor))
     );
   }
 
-  hasRemovedComponent(componentConstructor: ComponentConstructor): boolean {
+  hasRemovedComponent(componentConstructor: Constructor<Component>): boolean {
     return this.componentTypesToRemove.has(componentConstructor);
   }
 
-  hasAllComponents(componentConstructors: Map<ComponentConstructor, any>): boolean {
+  hasAllComponents(componentConstructors: Map<Constructor<Component>, any>): boolean {
     for (const [component] of componentConstructors) {
       if (!this.hasComponent(component)) { return false; }
     }
@@ -118,7 +117,7 @@ export class Entity implements Resettable {
     return true;
   }
 
-  hasAnyComponents(componentConstructors: ComponentConstructor[]): boolean {
+  hasAnyComponents(componentConstructors: Constructor<Component>[]): boolean {
     for (const component of componentConstructors) {
       if (this.hasComponent(component)) { return true; }
     }

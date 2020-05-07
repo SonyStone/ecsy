@@ -1,5 +1,5 @@
-import { ComponentConstructor } from '../component.interface';
-import { OperatorComponent, Operators } from '../data';
+import { Component, Constructor } from '../component.interface';
+import { OperatorComponents } from '../data';
 import { queryKey } from '../utils';
 import { Entity } from './entity';
 import { Query } from './query';
@@ -17,7 +17,7 @@ export class QueryManager {
    * Get a query for the specified components
    * @param operatorComponents Components that the query should have
    */
-  getQuery(operatorComponents: OperatorComponent[] | OperatorComponent, entities: Entity[]): Query {
+  getQuery(operatorComponents: OperatorComponents, entities: Entity[]): Query {
     const key = queryKey(operatorComponents);
 
     let query = this.queries.get(key);
@@ -36,7 +36,7 @@ export class QueryManager {
    * @param entity Entity that just got the new component
    * @param componentConstructor Component added to the entity
    */
-  onEntityComponentAdded(entity: Entity, componentConstructor: ComponentConstructor): void {
+  onEntityComponentAdded(entity: Entity, componentConstructor: Constructor<Component>): void {
     // Check each indexed query to see if we need to add this entity to the list
     for (const [_, query] of this.queries) {
       query.addEntityComponent(entity, componentConstructor);
@@ -48,7 +48,7 @@ export class QueryManager {
    * @param entity Entity to remove the component from
    * @param componentConstructor Component to remove from the entity
    */
-  onEntityComponentRemoved(entity: Entity, componentConstructor: ComponentConstructor): void {
+  onEntityComponentRemoved(entity: Entity, componentConstructor: Constructor<Component>): void {
     for (const [_, query] of this.queries) {
 
       // if ( // not

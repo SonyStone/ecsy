@@ -1,10 +1,9 @@
-import { System } from '@ecs';
+import { Entity, Read, System, SystemData, Not } from '@ecs';
 
 import {
   Collider,
   Colliding,
   Collisionable,
-  Moving,
   Object3D,
   PerformanceСompensation,
   PulsatingColor,
@@ -16,23 +15,16 @@ import {
 
 declare var BABYLON: any;
 
-export class RotatingSystem extends System {
+@SystemData(
+  [Read(Rotating), Read(Object3D), Not(PulsatingColor)],
+  Read(PerformanceСompensation),
+)
+export class RotatingSystem implements System {
+  run(entities: [Rotating, Object3D][], [{ delta }]: PerformanceСompensation[]) {
 
-  static queries = {
-    entities: { components: [Rotating, Object3D] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  };
+    // console.log(`entities`, entities);
 
-  run() {
-    const context = this.queries.context.results[0];
-    const delta = context.getComponent(PerformanceСompensation).delta;
-
-    const entities = this.queries.entities.results;
-
-    for (const entity of entities) {
-      const rotatingSpeed = entity.getComponent(Rotating).rotatingSpeed;
-      const object = entity.getComponent(Object3D).object;
-
+    for (const [{ rotatingSpeed }, { object }] of entities) {
       object.rotation.x += rotatingSpeed * delta;
       object.rotation.y += rotatingSpeed * delta * 2;
       object.rotation.z += rotatingSpeed * delta * 3;
@@ -43,23 +35,16 @@ export class RotatingSystem extends System {
 
 const TIMER_TIME = 1;
 
-export class PulsatingColorSystem extends System {
-
-  static queries = {
-    entities: { components: [PulsatingColor, Object3D] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  };
-
-  run() {
-
-    const context = this.queries.context.results[0];
-    let time = context.getComponent(PerformanceСompensation).time;
+@SystemData(
+  [Read(Entity), Read(PulsatingColor), Read(Object3D)],
+  Read(PerformanceСompensation),
+)
+export class PulsatingColorSystem implements System {
+  run(entities: [Entity, PulsatingColor, Object3D][], [{ time }]: PerformanceСompensation[]) {
 
     time *= 1000;
-    const entities = this.queries.entities.results;
 
-    for (const entity of entities) {
-      const object = entity.getComponent(Object3D).object;
+    for (const [entity, { offset }, { object }] of entities) {
       if (entity.hasComponent(Colliding)) {
         object.instancedBuffers.color.set(1, 1, 0, 1);
       } else if (entity.hasComponent(Recovering)) {
@@ -68,7 +53,7 @@ export class PulsatingColorSystem extends System {
       } else {
         const r =
           Math.sin(
-            time / 500 + entity.getComponent(PulsatingColor).offset * 12
+            time / 500 + offset * 12
           ) /
             2 +
           0.5;
@@ -79,21 +64,13 @@ export class PulsatingColorSystem extends System {
 }
 
 
-
+@SystemData(
+  [Read(Entity), Read(PulsatingScale)],
+  Read(PerformanceСompensation),
+)
 export class PulsatingScaleSystem extends System {
-
-  static queries = {
-    entities: { components: [PulsatingScale] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  };
-
-  run() {
-
-    const context = this.queries.context.results[0];
-    const time = context.getComponent(PerformanceСompensation).time;
-
-    const entities = this.queries.entities.results;
-    for (const entity of entities) {
+  run(entities: [Entity, PulsatingScale][], [{ time }]: PerformanceСompensation[]) {
+    for (const [entity, { offset }] of entities) {
       const object = entity.getComponent(Object3D).object;
 
       let mul;
@@ -105,30 +82,19 @@ export class PulsatingScaleSystem extends System {
         mul = 0.8;
       }
 
-      const offset = entity.getComponent(PulsatingScale).offset;
       const sca = mul * (Math.cos(time + offset) / 2 + 1) + 0.2;
       object.scaling.set(sca, sca, sca);
     }
   }
 }
 
+@SystemData(
+  [Read(Object3D), Read(PulsatingScale)],
+  Read(PerformanceСompensation),
+)
 export class MovingSystem extends System {
-
-  static queries = {
-    entities: { components: [PulsatingScale] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  };
-
-  run() {
-
-    const context = this.queries.context.results[0];
-    const time = context.getComponent(PerformanceСompensation).time;
-
-    const entities = this.queries.entities.results;
-
-    for (const entity of entities) {
-      const object = entity.getComponent(Object3D).object;
-      const offset = entity.getComponent(PulsatingScale).offset;
+  run(entities: [Object3D, PulsatingScale][], [{ time }]: PerformanceСompensation[]) {
+    for (const [{ object }, { offset }] of entities) {
       const radius = 5;
       const maxRadius = 5;
       object.position.z = Math.cos(time + 3 * offset) * maxRadius + radius;
@@ -136,22 +102,14 @@ export class MovingSystem extends System {
   }
 }
 
+@SystemData(
+  [Read(Entity), Read(Timeout)],
+  Read(PerformanceСompensation),
+)
+export class TimeoutSystem implements System {
+  run(entities: [Entity, Timeout][], [{ delta }]: PerformanceСompensation[]) {
+    for (const [entity, timeout] of entities) {
 
-export class TimeoutSystem extends System {
-
-  static queries = {
-    entities: { components: [Timeout] },
-    context: { components: [PerformanceСompensation], mandatory: true }
-  };
-
-  run() {
-    const context = this.queries.context.results[0];
-    const delta = context.getComponent(PerformanceСompensation).delta;
-
-    const entities = this.queries.entities.results;
-    for (const entity of entities) {
-
-      const timeout = entity.getMutableComponent(Timeout);
       timeout.timer -= delta;
       if (timeout.timer < 0) {
         timeout.timer = 0;
@@ -168,23 +126,15 @@ export class TimeoutSystem extends System {
   }
 }
 
-
-export class ColliderSystem extends System {
-
-  static queries = {
-    boxes: { components: [Collisionable] },
-    balls: { components: [Collider] }
-  };
-
-  run() {
-    const boxes = this.queries.boxes.results;
-    const balls = this.queries.balls.results;
-    for (const ball of balls) {
-      const ballObject = ball.getComponent(Object3D).object;
-
-      for (const box of boxes) {
-        const boxObject = box.getComponent(Object3D).object;
-        const prevColliding = box.hasComponent(Colliding);
+@SystemData(
+  [Read(Entity), Read(Object3D), Read(Collisionable)],
+  [Read(Object3D), Read(Collider)],
+)
+export class ColliderSystem implements System {
+  run(boxes: [Entity, Object3D, Collisionable][], balls: [Object3D, Collider][]) {
+    for (const [{ object: ballObject }] of balls) {
+      for (const [entity, { object: boxObject }] of boxes) {
+        const prevColliding = entity.hasComponent(Colliding);
         if (
           BABYLON.BoundingSphere.Intersects(
             ballObject.getBoundingInfo().boundingSphere,
@@ -192,13 +142,13 @@ export class ColliderSystem extends System {
           )
         ) {
           if (!prevColliding) {
-            box.addComponent(Colliding);
+            entity.addComponent(Colliding);
           }
         } else {
           if (prevColliding) {
-            box.removeComponent(Colliding);
-            box.addComponent(Recovering);
-            box.addComponent(Timeout, {
+            entity.removeComponent(Colliding);
+            entity.addComponent(Recovering);
+            entity.addComponent(Timeout, {
               timer: TIMER_TIME,
               removeComponents: [Recovering]
             });

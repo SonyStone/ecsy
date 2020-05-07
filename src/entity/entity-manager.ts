@@ -1,5 +1,5 @@
 import { ComponentManager } from '../component';
-import { ComponentConstructor, Component } from '../component.interface';
+import { Component, Constructor } from '../component.interface';
 import { getName } from '../utils';
 import { ObjectPool } from '../utils/object-pool';
 import { Entity } from './entity';
@@ -62,7 +62,7 @@ export class EntityManager {
    * @param componentConstructor Component to be added to the entity
    * @param values Optional values to replace the default attributes
    */
-  entityAddComponent(entity: Entity, componentConstructor: ComponentConstructor, values?: { [key: string]: any }): void {
+  entityAddComponent(entity: Entity, componentConstructor: Constructor<Component>, values?: { [key: string]: any }): void {
     if (entity.componentTypes.has(componentConstructor)) {
       return;
     }
@@ -86,7 +86,7 @@ export class EntityManager {
    * @param componentConstructor Component to remove from the entity
    * @param immediately If you want to remove the component immediately instead of deferred (Default is false)
    */
-  entityRemoveComponent(entity: Entity, componentConstructor: ComponentConstructor, immediately?: boolean): void {
+  entityRemoveComponent(entity: Entity, componentConstructor: Constructor<Component>, immediately?: boolean): void {
     if (!entity.componentTypes.has(componentConstructor)) {
 
       return;
@@ -116,7 +116,7 @@ export class EntityManager {
     this.queryManager.onEntityComponentRemoved(entity, componentConstructor);
   }
 
-  entityRemoveComponentSync(entity: Entity, componentConstructor: ComponentConstructor): void {
+  entityRemoveComponentSync(entity: Entity, componentConstructor: Constructor<Component>): void {
     // Remove T listing on entity and property ref, then free the component.
     entity.componentTypes.delete(componentConstructor);
     const componentName = getName(componentConstructor);

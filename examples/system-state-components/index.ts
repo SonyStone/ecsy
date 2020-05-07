@@ -1,4 +1,4 @@
-import { Not, System, SystemStateComponent, World } from '@ecs';
+import { Not, System, SystemStateComponent, World, Entity, SystemData, Read } from '@ecs';
 
 const textarea = document.querySelector('textarea');
 function log(msg) {
@@ -45,29 +45,31 @@ export class PerformanceСompensation {
 }
 
 // Systems
-class MainSystem extends System {
-
-  static queries = {
-    added: { components: [Sprite, Not(SpriteResources)] },
-    removed: { components: [Not(Sprite), SpriteResources] },
-    normal: { components: [Sprite, SpriteResources] }
-  };
-
-  run() {
-    this.queries.added.results.forEach(entity => {
+@SystemData(
+  [Read(Entity), Read(Sprite), Not(SpriteResources)],
+  [Read(Entity), Not(Sprite), Read(SpriteResources)],
+  [Read(Entity), Read(Sprite), Read(SpriteResources)],
+)
+class MainSystem implements System {
+  run(
+    added: [Entity, Sprite][],
+    removed: [Entity, SpriteResources],
+    normal: [Entity, Sprite, SpriteResources]
+  ) {
+    for (const [entity] of added) {
       const memPosition = Math.floor(Math.random() * 1000);
       const size = Math.floor(Math.random() * 900) + 100;
 
       log(`Added SpriteResources component: 'memory position: ${memPosition}, size: ${size}kb' to entity id=${entity.id}`);
       entity.addComponent(SpriteResources, {memPosition, size});
-    });
+    }
 
-    this.queries.removed.results.forEach(entity => {
+    for (const [entity] of removed) {
       const resources = entity.getComponent(SpriteResources);
       log(`Freeing SpriteResources 'memory position: ${resources.memPosition}, size: ${resources.size}kb'`);
       log(`Removing SpriteResources component from entity id=${entity.id}`);
       entity.removeComponent(SpriteResources);
-    });
+    }
   }
 }
 

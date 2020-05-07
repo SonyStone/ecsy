@@ -1,5 +1,5 @@
-import { Component, ComponentConstructor } from '../component.interface';
-import { OperatorComponent, Operators } from '../data';
+import { Component, Constructor } from '../component.interface';
+import { OperatorComponent, OperatorComponents, Operators } from '../data';
 import { some } from '../utils';
 import { Entity } from './entity';
 
@@ -10,7 +10,7 @@ export class Query {
   components: Component[] | Component[][];
   private isChanged: boolean;
 
-  private componentConstructors: Map<ComponentConstructor, OperatorComponent>;
+  private componentConstructors: Map<Constructor<Component>, OperatorComponent>;
 
   private entities = new Set<Entity>();
 
@@ -18,7 +18,7 @@ export class Query {
    * @param operatorComponents List of types of components to query
    */
   constructor(
-    operatorComponents: OperatorComponent[] | OperatorComponent,
+    operatorComponents: OperatorComponents,
     entities: Entity[],
     public key: string,
   ) {
@@ -43,14 +43,21 @@ export class Query {
    * and Entity has ALL the components of the query
    * and Entity is not already in the query
    */
-  addEntityComponent(entity: Entity, componentConstructor: ComponentConstructor): void {
+  addEntityComponent(entity: Entity, componentConstructor: Constructor<Component>): void {
     const operatorComponent = this.componentConstructors.get(componentConstructor);
 
-    if (!operatorComponent) {
+    if (!operatorComponent || operatorComponent.component instanceof Entity) {
       return;
     }
 
     const isAddEntity = !some(operatorComponent)(({skipEntity}) => skipEntity(entity));
+
+    // console.log(
+    //   `addEntityComponent`, this.key,
+    //   `\nentity`, entity.components,
+    //   `\nComponent`, componentConstructor,
+    //   `\nisAddEntity`, isAddEntity,
+    // );
 
     if (isAddEntity) {
       this.addEntity(entity);
@@ -95,17 +102,21 @@ export class Query {
   }
 }
 
-const initComponents = (componentConstructors: Map<ComponentConstructor, OperatorComponent>, entities: Set<Entity>): Component[] => {
+const initComponents = (componentConstructors: Map<Constructor<Component>, OperatorComponent>, entities: Set<Entity>): Component[] => {
   const components = [];
 
   for (const entity of entities) {
     const temp = [];
+
     for (const [componentConstructor, operatorComponent] of componentConstructors) {
       if (operatorComponent.operator === Operators.Not) {
         continue;
       }
 
-      const component = entity.getComponent(componentConstructor);
+      const component = (operatorComponent.component.name === 'Entity')
+        ? entity
+        : entity.getComponent(componentConstructor)
+
       if (component) {
         temp.push(component);
       }
@@ -123,7 +134,7 @@ const initComponents = (componentConstructors: Map<ComponentConstructor, Operato
 
 
 const initComponentConstructorsMap =
-  (componentConstructors: OperatorComponent[] | OperatorComponent): [ComponentConstructor, OperatorComponent][] =>
+  (componentConstructors: OperatorComponents): [Constructor<Component>, OperatorComponent][] =>
     (Array.isArray(componentConstructors))
       ? componentConstructors.map((componentConstructor) => [componentConstructor.component, componentConstructor])
       : [[componentConstructors.component, componentConstructors]];

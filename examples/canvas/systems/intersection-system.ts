@@ -8,13 +8,13 @@ import { intersection } from '../utils';
 )
 export class IntersectionSystem implements System {
 
-  run(entities: [Circle, Position, Entity][]) {
+  run(entities: [Circle, Position, Entity, Intersecting][]) {
 
-    // console.log(`IntersectionSystem`, this, (this as any).executeTime);
+    // console.log(`IntersectionSystem`, entities);
 
     for (const [circle, position, entity] of entities) {
       if (entity.hasComponent(Intersecting)) {
-        entity.getMutableComponent(Intersecting).points.length = 0;
+        entity.getComponent(Intersecting).points.length = 0;
       }
 
       for (const [circleB, positionB] of entities) {
