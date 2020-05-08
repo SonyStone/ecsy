@@ -61,7 +61,7 @@ export class Rotating {
   }
 }
 
-export class PerformanceСompensation {
+export class PerformanceCompensation {
   delta: number;
   time: number;
 

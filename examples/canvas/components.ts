@@ -36,7 +36,7 @@ export class DemoSettings {
   speedMultiplier = 0.001;
 }
 
-export class PerformanceСompensation {
+export class PerformanceCompensation {
   delta: number;
   time: number;
 

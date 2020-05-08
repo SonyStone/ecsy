@@ -34,7 +34,7 @@ class SpriteResources extends SystemStateComponent {
   }
 }
 
-export class PerformanceСompensation {
+export class PerformanceCompensation {
   delta: number;
   time: number;
 
@@ -82,9 +82,9 @@ world
   .registerSystem(MainSystem)
 
 const singletonEntity = world.createEntity()
-  .addComponent(PerformanceСompensation);
+  .addComponent(PerformanceCompensation);
 
-const compensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const compensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 // HTML Code to interact with the world
 document.getElementById('createEntity').addEventListener('click', () => {

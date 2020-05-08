@@ -5,20 +5,20 @@ import {
   CanvasContext,
   Circle,
   DemoSettings,
-  PerformanceСompensation,
+  PerformanceCompensation,
   Position,
   Velocity,
 } from '../components';
 
 @SystemData(
   [Read(Circle), Read(Velocity), Read(Acceleration), Read(Position)],
-  [Read(PerformanceСompensation), Read(CanvasContext), Read(DemoSettings)],
+  [Read(PerformanceCompensation), Read(CanvasContext), Read(DemoSettings)],
 )
 export class MovementSystem implements System {
 
   run(
     entities: [Circle, Velocity, Acceleration, Position][],
-    [[{delta}, canvasContext, {speedMultiplier: multiplier}]]: [PerformanceСompensation, CanvasContext, DemoSettings][],
+    [[{delta}, canvasContext, {speedMultiplier: multiplier}]]: [PerformanceCompensation, CanvasContext, DemoSettings][],
   ) {
 
     const canvasWidth = canvasContext.width;

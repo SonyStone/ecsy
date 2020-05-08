@@ -37,7 +37,7 @@ class Position extends Vector2 {}
 // Position component
 class Acceleration extends Vector2 {}
 
-class PerformanceСompensation {
+class PerformanceCompensation {
   delta = 0;
   time = 0;
 
@@ -53,13 +53,13 @@ class PerformanceСompensation {
 
 // MovableSystem
 @SystemData(
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
   [Read(Position), Read(Velocity), Not(Acceleration)],
 )
 class MovableSystem implements System {
 
   // This method will get called on every frame by default
-  run(performance: PerformanceСompensation[], entities: any[]) {
+  run(performance: PerformanceCompensation[], entities: any[]) {
 
     console.log(`run MovableSystem`, performance, entities);
   }
@@ -83,7 +83,7 @@ const world = new World();
 
 
 // world.createEntity()
-//   .addComponent(PerformanceСompensation);
+//   .addComponent(PerformanceCompensation);
 
 const entity = world.createEntity()
   // .addComponent(Velocity)

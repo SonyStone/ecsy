@@ -31,7 +31,7 @@ export class Rotating {
   decreasingSpeed = 0.001;
 }
 
-export class PerformanceСompensation {
+export class PerformanceCompensation {
   delta: number;
   time: number;
 

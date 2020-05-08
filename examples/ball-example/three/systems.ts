@@ -11,7 +11,7 @@ import {
   Recovering,
   Rotating,
   Timeout,
-  PerformanceСompensation,
+  PerformanceCompensation,
 } from './components';
 
 declare var THREE: any;
@@ -20,12 +20,12 @@ export class RotatingSystem extends System {
 
   static queries = {
     entities: { components: [Rotating, Object3D] },
-    context: { components: [PerformanceСompensation], mandatory: true }
+    context: { components: [PerformanceCompensation], mandatory: true }
   };
 
   run() {
     const context = this.queries.context.results[0];
-    const delta = context.getComponent(PerformanceСompensation).delta;
+    const delta = context.getComponent(PerformanceCompensation).delta;
 
     const entities = this.queries.entities.results;
     for (const entity of entities) {
@@ -46,13 +46,13 @@ export class PulsatingColorSystem extends System {
 
   static queries = {
     entities: { components: [PulsatingColor, Object3D] },
-    context: { components: [PerformanceСompensation], mandatory: true }
+    context: { components: [PerformanceCompensation], mandatory: true }
   };
 
   run() {
 
     const context = this.queries.context.results[0];
-    let time = context.getComponent(PerformanceСompensation).time;
+    let time = context.getComponent(PerformanceCompensation).time;
 
     time *= 1000;
     const entities = this.queries.entities.results;
@@ -82,12 +82,12 @@ export class PulsatingScaleSystem extends System {
 
   static queries = {
     entities: { components: [PulsatingScale] },
-    context: { components: [PerformanceСompensation], mandatory: true }
+    context: { components: [PerformanceCompensation], mandatory: true }
   }
 
   run() {
     const context = this.queries.context.results[0];
-    const time = context.getComponent(PerformanceСompensation).time;
+    const time = context.getComponent(PerformanceCompensation).time;
 
     const entities = this.queries.entities.results;
     for (const entity of entities) {
@@ -114,13 +114,13 @@ export class MovingSystem extends System {
 
   static queries = {
     entities: { components: [PulsatingScale] },
-    context: { components: [PerformanceСompensation], mandatory: true }
+    context: { components: [PerformanceCompensation], mandatory: true }
   };
 
   run() {
 
     const context = this.queries.context.results[0];
-    const time = context.getComponent(PerformanceСompensation).time;
+    const time = context.getComponent(PerformanceCompensation).time;
 
     const entities = this.queries.entities.results;
     for (const entity of entities) {
@@ -138,13 +138,13 @@ export class TimeoutSystem extends System {
 
   static queries = {
     entities: { components: [Timeout] },
-    context: { components: [PerformanceСompensation], mandatory: true }
+    context: { components: [PerformanceCompensation], mandatory: true }
   };
 
   run() {
 
     const context = this.queries.context.results[0];
-    const delta = context.getComponent(PerformanceСompensation).delta;
+    const delta = context.getComponent(PerformanceCompensation).delta;
 
     const entities = this.queries.entities.results;
     for (const entity of entities) {

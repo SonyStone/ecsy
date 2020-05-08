@@ -56,7 +56,7 @@ class Renderable {
   reset() {}
 }
 
-class PerformanceСompensation {
+class PerformanceCompensation {
   delta = 0;
   time = 0;
 
@@ -73,12 +73,12 @@ class PerformanceСompensation {
 @SystemData(
   // Define a query of entities that have "Velocity" and "Position" components
   [Read(Velocity), Read(Position)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 class MovableSystem extends System {
 
   // This method will get called on every frame by default
-  run(movings: [Velocity, Position][], [{ delta }]: PerformanceСompensation[]) {
+  run(movings: [Velocity, Position][], [{ delta }]: PerformanceCompensation[]) {
 
     // console.log(movings);
     // Iterate through all the entities on the query
@@ -149,7 +149,7 @@ world
 
 // Used for singleton components
 const singletonEntity = world.createEntity()
-    .addComponent(PerformanceСompensation);
+    .addComponent(PerformanceCompensation);
 
 // Some helper functions when creating the components
 function getRandomVelocity() {
@@ -181,13 +181,13 @@ for (let i = 0; i < NUM_ELEMENTS; i++) {
     .addComponent(Renderable)
 }
 
-const performanceСompensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const performanceCompensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 // Run!
 function run() {
   // Compute delta and elapsed time
   const time = performance.now();
-  performanceСompensation.delta = time - lastTime;
+  performanceCompensation.delta = time - lastTime;
 
   // Run all the systems
   world.run();

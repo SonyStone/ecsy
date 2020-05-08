@@ -8,7 +8,7 @@ import {
   Colliding,
   Moving,
   Object3D,
-  PerformanceСompensation,
+  PerformanceCompensation,
   PulsatingColor,
   PulsatingScale,
   Recovering,
@@ -49,9 +49,9 @@ world
   .registerComponent(Rotating);
 
 const singletonEntity = world.createEntity()
-  .addComponent(PerformanceСompensation);
+  .addComponent(PerformanceCompensation);
 
-const performanceСompensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const performanceCompensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 let camera;
 let scene;
@@ -168,8 +168,8 @@ function onWindowResize() {
 }
 
 function animate() {
-  performanceСompensation.delta = clock.getDelta();
-  performanceСompensation.time = clock.elapsedTime;
+  performanceCompensation.delta = clock.getDelta();
+  performanceCompensation.time = clock.elapsedTime;
   // console.time('render');
   world.run();
   // console.timeEnd('render');

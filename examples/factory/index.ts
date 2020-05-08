@@ -39,7 +39,7 @@ class Tshirt {
   }
 }
 
-export class PerformanceСompensation {
+export class PerformanceCompensation {
   delta: number;
   time: number;
 
@@ -87,9 +87,9 @@ world
   .registerSystem(TshirtSystem)
 
 const singletonEntity = world.createEntity()
-  .addComponent(PerformanceСompensation);
+  .addComponent(PerformanceCompensation);
 
-const compensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const compensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 
 // HTML Code to interact with the world

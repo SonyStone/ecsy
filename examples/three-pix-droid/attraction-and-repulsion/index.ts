@@ -63,7 +63,7 @@ class MouseClick {
   down: boolean;
 }
 
-class PerformanceСompensation {
+class PerformanceCompensation {
   delta = 0;
   time = 0;
 
@@ -79,7 +79,7 @@ class PerformanceСompensation {
 // UpdateDotsSystem
 @SystemData(
   Read(Dot),
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 class UpdateDotsSystem implements System {
   // This method will get called on every frame by default
@@ -197,7 +197,7 @@ const world = new World();
 
 // Used for singleton components
 const singletonEntity = world.createEntity()
-  .addComponent(PerformanceСompensation)
+  .addComponent(PerformanceCompensation)
   .addComponent(MouseClick)
   .addComponent(MousePosition, { x: gMouse.x, y: gMouse.y });
 
@@ -213,14 +213,14 @@ world
   .registerSystem(RendererBackground)
   .registerSystem(RendererDotsSystem);
 
-const performanceСompensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const performanceCompensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 console.log(world);
 // Run!
 function run() {
   // Compute delta and elapsed time
   const time = performance.now();
-  performanceСompensation.delta = time - lastTime;
+  performanceCompensation.delta = time - lastTime;
 
   // Run all the systems
   world.run();

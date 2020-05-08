@@ -7,7 +7,7 @@ import {
   Collisionable,
   Moving,
   Object3D,
-  PerformanceСompensation,
+  PerformanceCompensation,
   PulsatingColor,
   PulsatingScale,
   Rotating,
@@ -34,9 +34,9 @@ world.systemManager
   // .registerSystem(MovingSystem);
 
 const singletonEntity = world.createEntity()
-  .addComponent(PerformanceСompensation);
+  .addComponent(PerformanceCompensation);
 
-const compensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+const compensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
 init();
 

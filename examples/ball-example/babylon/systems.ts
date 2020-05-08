@@ -5,7 +5,7 @@ import {
   Colliding,
   Collisionable,
   Object3D,
-  PerformanceСompensation,
+  PerformanceCompensation,
   PulsatingColor,
   PulsatingScale,
   Recovering,
@@ -17,10 +17,10 @@ declare var BABYLON: any;
 
 @SystemData(
   [Read(Rotating), Read(Object3D), Not(PulsatingColor)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 export class RotatingSystem implements System {
-  run(entities: [Rotating, Object3D][], [{ delta }]: PerformanceСompensation[]) {
+  run(entities: [Rotating, Object3D][], [{ delta }]: PerformanceCompensation[]) {
 
     // console.log(`entities`, entities);
 
@@ -37,10 +37,10 @@ const TIMER_TIME = 1;
 
 @SystemData(
   [Read(Entity), Read(PulsatingColor), Read(Object3D)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 export class PulsatingColorSystem implements System {
-  run(entities: [Entity, PulsatingColor, Object3D][], [{ time }]: PerformanceСompensation[]) {
+  run(entities: [Entity, PulsatingColor, Object3D][], [{ time }]: PerformanceCompensation[]) {
 
     time *= 1000;
 
@@ -66,10 +66,10 @@ export class PulsatingColorSystem implements System {
 
 @SystemData(
   [Read(Entity), Read(PulsatingScale)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 export class PulsatingScaleSystem extends System {
-  run(entities: [Entity, PulsatingScale][], [{ time }]: PerformanceСompensation[]) {
+  run(entities: [Entity, PulsatingScale][], [{ time }]: PerformanceCompensation[]) {
     for (const [entity, { offset }] of entities) {
       const object = entity.getComponent(Object3D).object;
 
@@ -90,10 +90,10 @@ export class PulsatingScaleSystem extends System {
 
 @SystemData(
   [Read(Object3D), Read(PulsatingScale)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 export class MovingSystem extends System {
-  run(entities: [Object3D, PulsatingScale][], [{ time }]: PerformanceСompensation[]) {
+  run(entities: [Object3D, PulsatingScale][], [{ time }]: PerformanceCompensation[]) {
     for (const [{ object }, { offset }] of entities) {
       const radius = 5;
       const maxRadius = 5;
@@ -104,10 +104,10 @@ export class MovingSystem extends System {
 
 @SystemData(
   [Read(Entity), Read(Timeout)],
-  Read(PerformanceСompensation),
+  Read(PerformanceCompensation),
 )
 export class TimeoutSystem implements System {
-  run(entities: [Entity, Timeout][], [{ delta }]: PerformanceСompensation[]) {
+  run(entities: [Entity, Timeout][], [{ delta }]: PerformanceCompensation[]) {
     for (const [entity, timeout] of entities) {
 
       timeout.timer -= delta;

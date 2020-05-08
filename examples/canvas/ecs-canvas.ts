@@ -5,7 +5,7 @@ import {
   CanvasContext,
   Circle,
   DemoSettings,
-  PerformanceСompensation,
+  PerformanceCompensation,
   Position,
   Velocity,
 } from './components';
@@ -37,7 +37,7 @@ export class EcsCanvas {
 
     // Used for singleton components
     const singletonEntity = world.createEntity()
-        .addComponent(PerformanceСompensation)
+        .addComponent(PerformanceCompensation)
         .addComponent(CanvasContext)
         .addComponent(DemoSettings);
 
@@ -71,7 +71,7 @@ export class EcsCanvas {
       canvasComponent.height = canvas.height = window.innerHeight;
     }, false );
 
-    const performanceСompensation = singletonEntity.getMutableComponent(PerformanceСompensation);
+    const performanceCompensation = singletonEntity.getMutableComponent(PerformanceCompensation);
 
     let lastTime = performance.now();
 
@@ -80,7 +80,7 @@ export class EcsCanvas {
     const update = () => {
 
       const time = performance.now();
-      performanceСompensation.delta = time - lastTime;
+      performanceCompensation.delta = time - lastTime;
       lastTime = time;
 
       world.run();
