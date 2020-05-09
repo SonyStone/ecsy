@@ -1,6 +1,6 @@
 import { Component, Constructor } from '../component.interface';
+import { Query } from '../query';
 import { EntityManager } from './entity-manager';
-import { Query } from './query';
 
 // tslint:disable:no-bitwise
 
@@ -50,18 +50,6 @@ export class Entity implements Component {
 
   getMutableComponent<T>(componentConstructor: Constructor<T> ): T {
     const component = this.components.get(componentConstructor.name) as T;
-
-    for (const query of this.queries) {
-
-      // @todo accelerate this check. Maybe having query._Components as an object
-      // if (query.componentConstructors.has(componentConstructor)) {
-        // query.eventDispatcher.dispatchEvent(
-        //   QueryEvents.COMPONENT_CHANGED,
-        //   this,
-        //   component
-        // );
-      // }
-    }
 
     return component;
   }

@@ -1,7 +1,7 @@
 import { ComponentManager } from './component';
 import { Component, Constructor } from './component.interface';
 import { Entity, EntityManager } from './entity';
-import { QueryManager } from './entity/query-manager';
+import { QueryManager } from './query';
 import { System, SystemManager } from './system';
 import { SystemConstructor } from './system.interface';
 

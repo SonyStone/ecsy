@@ -1,6 +1,6 @@
 import { OperatorComponent } from '../data';
 import { Entity } from '../entity';
-import { Query } from '../entity/query';
+import { Query } from '../query';
 
 export interface ResultQuery {
   [key: string]: {

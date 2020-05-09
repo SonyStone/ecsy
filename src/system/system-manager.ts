@@ -1,6 +1,5 @@
-import { QueryManager } from 'src/entity/query-manager';
-
 import { EntityManager } from '../entity';
+import { QueryManager } from '../query';
 import { SystemConstructor } from '../system.interface';
 import { System } from './system';
 

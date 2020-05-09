@@ -1,7 +1,7 @@
 import { Component, Constructor } from '../component.interface';
 import { OperatorComponents } from '../data';
 import { queryKey } from '../utils';
-import { Entity } from './entity';
+import { Entity } from '../entity';
 import { Query } from './query';
 
 // tslint:disable:no-bitwise

@@ -1,9 +1,9 @@
 import { ComponentManager } from '../component';
 import { Component, Constructor } from '../component.interface';
+import { QueryManager } from '../query';
 import { getName } from '../utils';
 import { ObjectPool } from '../utils/object-pool';
 import { Entity } from './entity';
-import { QueryManager } from './query-manager';
 import { SystemStateComponent } from './system-state-component';
 
 // tslint:disable:no-bitwise

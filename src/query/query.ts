@@ -1,7 +1,7 @@
 import { Component, Constructor } from '../component.interface';
 import { OperatorComponent, OperatorComponents, Operators } from '../data';
 import { some } from '../utils';
-import { Entity } from './entity';
+import { Entity } from '../entity';
 
 // tslint:disable:no-bitwise
 
