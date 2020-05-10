@@ -18,6 +18,7 @@ const configs = {
   'attraction-and-repulsion': 'examples/three-pix-droid/attraction-and-repulsion',
   'particles-with-connection': 'examples/three-pix-droid/particles-with-connection',
   'stardust-parallax-effect': 'examples/three-pix-droid/stardust-parallax-effect',
+  'bezier-curves-animation': 'examples/three-pix-droid/bezier-curves-animation',
 }
 
 const projects = {

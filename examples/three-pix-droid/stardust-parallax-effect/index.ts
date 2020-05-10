@@ -44,7 +44,7 @@ const RINGS_COUNT = 10;
 
   {
     const canvasSize = singletonEntity.getComponent(CanvasSize);
-    canvas.sizeUpdater(canvasSize);
+    canvas.resizeUpdater(canvasSize);
   }
 
   for(let i = 0 ; i < ORBS_COUNT ; i++){

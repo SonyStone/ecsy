@@ -31,7 +31,7 @@ const singletonEntity = world.createEntity()
 
 const canvasSize = singletonEntity.getComponent(CanvasSize);
 
-canvas.sizeUpdater(canvasSize);
+canvas.resizeUpdater(canvasSize);
 
 const PARTICLE_LIFE = 6;
 const PARTICLE_MAX_VELOCITY = 0.5

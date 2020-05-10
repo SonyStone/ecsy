@@ -32,7 +32,7 @@ export class CanvasData {
     }
   }
 
-  sizeUpdater(component: CanvasSize): void {
+  resizeUpdater(component: CanvasSize): void {
     this.sizeUpdateListener = () => {
       component.width = this.canvas.width = window.innerWidth
       component.height = this.canvas.height = window.innerHeight;
