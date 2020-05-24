@@ -15,7 +15,7 @@ export class LineProperties {
   color = [255, 40, 40];
 }
 
-export class Particle {
+export class Life {
   life: number;
 
   constructor() {}

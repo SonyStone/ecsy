@@ -75,15 +75,16 @@ export class SystemManager {
     const startTime = performance.now(); // ! debag performance
 
     // main run;
-    const components = system.queries.map((query) => {
-      query.prepareComponents();
+    system.components.length = 0;
 
-      return query.components;
-    });
+    // console.log(`queries`, system);
 
-    // console.log(`components`, system, ...components);
+    for (let i = 0; i < system.queries.length; i++) {
+      system.queries[i].prepareComponents();
+      system.components.push(system.queries[i].components);
+    }
 
-    system.run(...components);
+    system.run.apply(system, system.components);
 
     system.executeTime = performance.now() - startTime; // ! debag performance
     this.lastExecutedSystem = system;
@@ -99,8 +100,8 @@ export class SystemManager {
   }
 
   run(): void {
-    for (const system of this.executeSystems) {
-      this.runSystem(system);
+    for (let i = 0; i < this.executeSystems.length; i++) {
+      this.runSystem(this.executeSystems[i]);
     }
   }
 

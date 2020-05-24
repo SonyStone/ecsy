@@ -7,7 +7,9 @@ import { drawLine, fillCircle } from '../utils';
   Read(CanvasContext),
 )
 export class RendererBackground implements System {
-  run([canvasComponent]: CanvasContext[]) {
+  run(canvas: CanvasContext[]) {
+
+    const canvasComponent = canvas[0];
 
     const ctx: CanvasRenderingContext2D = canvasComponent.ctx;
     const canvasWidth = canvasComponent.width;
@@ -24,9 +26,14 @@ export class RendererBackground implements System {
 )
 export class RendererCircles implements System {
 
-  run(components: [Circle, Position][], [{ ctx }]: CanvasContext[]) {
+  run(components: [Circle, Position][], canvas: CanvasContext[]) {
 
-    for (const [circle, position] of components) {
+    const ctx = canvas[0].ctx;
+
+    for (let i = 0; i < components.length; i++) {
+      const circle = components[i][0];
+      const position = components[i][1];
+
       ctx.beginPath();
       ctx.arc(
         position.x,
@@ -49,23 +56,28 @@ export class RendererCircles implements System {
 )
 export class RendererIntersecting implements System {
 
-  run(intersects: Intersecting[], [{ ctx }]: CanvasContext[]) {
+  run(intersects: Intersecting[], canvas: CanvasContext[]) {
 
-    for (const intersect of intersects) {
+    const ctx = canvas[0].ctx;
 
-      for (const points of intersect.points) {
+    for (let i = 0; i < intersects.length; i++) {
+      const intersect = intersects[i];
+
+      for (let j = 0; j < intersect.points.length; j++) {
+        const points = intersect.points[j];
+
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#ff9';
 
         ctx.fillStyle = 'rgba(255, 255,255, 0.2)';
-        fillCircle(ctx, points[0], points[1], 8);
-        fillCircle(ctx, points[2], points[3], 8);
+        fillCircle(ctx, points.xi, points.yi, 8);
+        fillCircle(ctx, points.xiPrime, points.yiPrime, 8);
 
         ctx.fillStyle = '#fff';
-        fillCircle(ctx, points[0], points[1], 3);
-        fillCircle(ctx, points[2], points[3], 3);
+        fillCircle(ctx, points.xi, points.yi, 3);
+        fillCircle(ctx, points.xiPrime, points.yiPrime, 3);
 
-        drawLine(ctx, points[0], points[1], points[2], points[3]);
+        drawLine(ctx, points.xi, points.yi, points.xiPrime, points.yiPrime);
       }
     }
   }

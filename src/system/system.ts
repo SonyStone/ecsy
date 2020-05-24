@@ -40,6 +40,8 @@ export abstract class System {
   initialized? = true;
 
   queriesOther? = {};
+
+  components?: any[];
   queries?: Query[];
 
   mandatoryQueries? = [];
@@ -82,6 +84,7 @@ export function SystemData(...queries: QueriesConstructor) {
   return <T extends typeof System>(constructor: T) => {
     constructor.queries = queries;
     constructor.prototype.queries = [];
+    constructor.prototype.components = [];
 
     return constructor;
   }

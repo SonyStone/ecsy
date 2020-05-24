@@ -1,15 +1,15 @@
 import { Read, System, SystemData } from '@ecs';
+import { CanvasContext, CanvasSize, Point, Velocity } from 'examples/utils';
 
-import { CanvasContext, CanvasSize } from '../canvas-data';
-import { Point } from '../point';
-import { Velocity } from '../velocity';
-import { BackgroundColor, LineProperties, Particle, ParticleProperties } from './components';
+import { BackgroundColor, Life, LineProperties, ParticleProperties } from './components';
 
 @SystemData(
   [Read(CanvasContext), Read(CanvasSize), Read(BackgroundColor)]
 )
 export class DrawBackgroundSystem implements System {
-  run([[{ ctx }, { width, height }, { bgColor }]]: [CanvasContext, CanvasSize, BackgroundColor][]) {
+  run(
+    [[{ ctx }, { width, height }, { bgColor }]]: [CanvasContext, CanvasSize, BackgroundColor][]
+  ) {
     ctx.globalCompositeOperation = `normal`;
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width, height);
@@ -17,13 +17,13 @@ export class DrawBackgroundSystem implements System {
 }
 
 @SystemData(
-  [Read(Point), Read(Velocity), Read(Particle)],
+  [Read(Point), Read(Velocity), Read(Life)],
   [Read(CanvasSize), Read(ParticleProperties)]
 )
 export class CalculateLifeSystem implements System {
   run(
-    particles: [Point, Velocity, Particle][],
-    [[{ width, height }, { maxVelocity, life}]]: [CanvasSize, ParticleProperties][]
+    particles: [Point, Velocity, Life][],
+    [[{ width, height }, { maxVelocity, life }]]: [CanvasSize, ParticleProperties][]
   ) {
     for (const [point, velocity, particle] of particles) {
       if (particle.life < 1) {
@@ -39,15 +39,15 @@ export class CalculateLifeSystem implements System {
 }
 
 @SystemData(
-  [Read(Point), Read(Velocity), Read(Particle)],
+  [Read(Point), Read(Velocity)],
   Read(CanvasSize),
 )
 export class ParticlesPositionSystem implements System {
   run(
-    particles: [Point, Velocity, Particle][],
+    particles: [Point, Velocity][],
     [{ width, height }]: CanvasSize[]
   ) {
-    for (const [point, velocity, particle] of particles) {
+    for (const [point, velocity] of particles) {
 
       velocity.x =
         (point.x + velocity.x > width && velocity.x > 0)

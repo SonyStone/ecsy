@@ -2,7 +2,7 @@ import './index.scss';
 
 import { World } from '@ecs';
 
-import { CanvasContext, CanvasData, CanvasSize } from '../canvas-data';
+import { CanvasContext, CanvasData, CanvasSize } from '../../utils/canvas-data';
 import { BackgroundColor } from '../particles-with-connection/components';
 import { DrawBackgroundSystem } from '../particles-with-connection/systems';
 import { Alpha, BezierCurvesConfig, Control1, Control2, End, FrameCounter, Start, WaveNoise } from './components';

@@ -1,8 +1,6 @@
 import { Read, System, SystemData } from '@ecs';
+import { CanvasContext, CanvasSize, MousePoint, Point } from 'examples/utils';
 
-import { CanvasContext, CanvasSize } from '../canvas-data';
-import { MousePoint } from '../mouse-data';
-import { Point } from '../point';
 import { Orb, P, PointData, Resize, RingsCount } from './components';
 
 @SystemData(

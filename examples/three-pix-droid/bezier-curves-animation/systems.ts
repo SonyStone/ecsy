@@ -1,6 +1,6 @@
 import { Read, System, SystemData } from '@ecs';
+import { CanvasContext, CanvasSize } from 'examples/utils';
 
-import { CanvasContext, CanvasSize } from '../canvas-data';
 import { Alpha, BezierCurvesConfig, Control1, Control2, End, FrameCounter, Start, WaveNoise } from './components';
 
 @SystemData(

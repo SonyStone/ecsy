@@ -65,7 +65,7 @@ export class World {
   run(): void {
     if (this.enabled) {
       this.systemManager.run();
-      this.entityManager.processDeferredRemoval();
+      // this.entityManager.processDeferredRemoval();
     }
   }
 

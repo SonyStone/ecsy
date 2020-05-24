@@ -12,19 +12,31 @@ import {
 
 @SystemData(
   [Read(Circle), Read(Velocity), Read(Acceleration), Read(Position)],
-  [Read(PerformanceCompensation), Read(CanvasContext), Read(DemoSettings)],
+  Read(PerformanceCompensation),
+  Read(CanvasContext),
+  Read(DemoSettings),
 )
 export class MovementSystem implements System {
 
   run(
     entities: [Circle, Velocity, Acceleration, Position][],
-    [[{delta}, canvasContext, {speedMultiplier: multiplier}]]: [PerformanceCompensation, CanvasContext, DemoSettings][],
+    performance: PerformanceCompensation[],
+    canvas: CanvasContext[],
+    settings: DemoSettings[],
   ) {
+
+    const delta = performance[0].delta;
+    const canvasContext = canvas[0];
+    const multiplier = settings[0].speedMultiplier;
 
     const canvasWidth = canvasContext.width;
     const canvasHeight = canvasContext.height;
 
-    for (const [circle, velocity, acceleration, position] of entities) {
+    for (let i = 0; i < entities.length; i++) {
+      const circle = entities[i][0];
+      const velocity = entities[i][1];
+      const acceleration = entities[i][2];
+      const position = entities[i][3];
 
       position.x +=
         velocity.x * acceleration.x * delta * multiplier;

@@ -1,6 +1,7 @@
 import './index.scss';
 
-import { System, World, SystemData, Read } from '@ecs';
+import { Read, System, SystemData, World } from '@ecs';
+import { Vector2 } from 'examples/utils';
 
 const NUM_ELEMENTS = 600;
 const SPEED_MULTIPLIER = 0.1;
@@ -23,24 +24,10 @@ window.addEventListener( 'resize', () => {
 // ----------------------
 
 // Velocity component
-class Velocity {
-  x = 0;
-  y = 0;
-
-  reset() {
-    this.x = this.y = 0;
-  }
-}
+class Velocity extends Vector2 {}
 
 // Position component
-class Position {
-  x = 0;
-  y = 0;
-
-  reset() {
-    this.x = this.y = 0;
-  }
-}
+class Position extends Vector2 {}
 
 // Shape component
 class Shape {
@@ -78,22 +65,26 @@ class PerformanceCompensation {
 class MovableSystem extends System {
 
   // This method will get called on every frame by default
-  run(movings: [Velocity, Position][], [{ delta }]: PerformanceCompensation[]) {
+  run(movings: [Velocity, Position][], performance: PerformanceCompensation[]) {
 
-    // console.log(movings);
+    const delta = performance[0].delta;
+
     // Iterate through all the entities on the query
-    for (const [velocity, position] of movings) {
+    for (let i = 0; i < movings.length; i++) {
+      const velocity = movings[i][0];
+      const position = movings[i][1];
 
       position.x += velocity.x * delta;
       position.y += velocity.y * delta;
 
-      if (position.x > canvasWidth + SHAPE_HALF_SIZE) position.x = - SHAPE_HALF_SIZE;
-      if (position.x < - SHAPE_HALF_SIZE) position.x = canvasWidth + SHAPE_HALF_SIZE;
-      if (position.y > canvasHeight + SHAPE_HALF_SIZE) position.y = - SHAPE_HALF_SIZE;
-      if (position.y < - SHAPE_HALF_SIZE) position.y = canvasHeight + SHAPE_HALF_SIZE;
-    };
+      if (position.x > canvasWidth + SHAPE_HALF_SIZE) { position.x = - SHAPE_HALF_SIZE };
+      if (position.x < - SHAPE_HALF_SIZE) { position.x = canvasWidth + SHAPE_HALF_SIZE };
+      if (position.y > canvasHeight + SHAPE_HALF_SIZE) { position.y = - SHAPE_HALF_SIZE };
+      if (position.y < - SHAPE_HALF_SIZE) { position.y = canvasHeight + SHAPE_HALF_SIZE };
+    }
   }
 }
+
 
 // RendererSystem
 @SystemData(
@@ -110,14 +101,17 @@ class RendererSystem extends System {
     // ctx.globalAlpha = 0.6;
 
     // Iterate through all the entities on the query
-    for (const [position, shape] of renderables) {
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < renderables.length; i++) {
+      const position = renderables[i][0];
+      const shape = renderables[i][1];
 
       if (shape.primitive === 'box') {
         this.drawBox(position);
       } else {
         this.drawCircle(position);
       }
-    };
+    }
   }
 
   drawCircle(position) {

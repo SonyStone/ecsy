@@ -86,6 +86,8 @@ export class EcsCanvas {
       world.run();
 
       requestAnimationFrame(update);
+
+
       if (timeOut > 0) {
         timeOut--;
       }
@@ -93,7 +95,6 @@ export class EcsCanvas {
     };
 
     update();
-
 
     console.log(`world`, world);
   }

@@ -1,4 +1,4 @@
-import { Vector2 } from '../vector-2';
+import { Vector2 } from 'examples/utils';
 
 export class Resize extends Vector2 {}
 

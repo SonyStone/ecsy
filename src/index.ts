@@ -9,3 +9,5 @@ export { Version } from './version';
 
 export { Entity } from './entity';
 export * from './system.interface';
+
+export { ObjectPool } from './utils/object-pool';

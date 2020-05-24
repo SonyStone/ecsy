@@ -2,11 +2,11 @@ import './index.scss';
 
 import { World } from '@ecs';
 
-import { CanvasContext, CanvasData, CanvasSize } from '../canvas-data';
-import { MouseData, MousePoint } from '../mouse-data';
+import { CanvasContext, CanvasData, CanvasSize } from '../../utils/canvas-data';
+import { MouseData, MousePoint } from '../../utils/mouse-data';
 import { BackgroundColor, LineProperties } from '../particles-with-connection/components';
 import { DrawBackgroundSystem, DrawLinesSystem } from '../particles-with-connection/systems';
-import { Point } from '../point';
+import { Point } from '../../utils/point';
 import { Orb, P, PointData, Resize, RingsCount } from './components';
 import { CenterUpdateSystem, OrbPointSystem, RefreshSystem, DrawOrbsSystem, DrawSunBackgroundSystem } from './systems';
 
@@ -66,8 +66,8 @@ const RINGS_COUNT = 10;
     .registerSystem(DrawBackgroundSystem)
     .registerSystem(OrbPointSystem)
     .registerSystem(RefreshSystem)
-    .registerSystem(DrawOrbsSystem)
     .registerSystem(DrawLinesSystem)
+    .registerSystem(DrawOrbsSystem)
 
   const run = () => {
     // Run all the systems

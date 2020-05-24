@@ -1,22 +1,12 @@
-import { Vector2 } from './math';
+import { Vector2 } from 'examples/utils';
 
-export class Velocity extends Vector2 {
-  reset() {
-    this.set(0, 0);
-  }
-}
+import { Intersection } from './utils';
 
-export class Acceleration extends Vector2 {
-  reset() {
-    this.set(0, 0);
-  }
-}
+export class Velocity extends Vector2 {}
 
-export class Position extends Vector2 {
-  reset() {
-    this.set(0, 0);
-  }
-}
+export class Acceleration extends Vector2 {}
+
+export class Position extends Vector2 {}
 
 export class Circle {
   radius = 0;
@@ -47,7 +37,7 @@ export class PerformanceCompensation {
 }
 
 export class Intersecting {
-  points = [];
+  points: Intersection[] = [];
 
   reset() {
     this.points.length = 0;

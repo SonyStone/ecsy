@@ -1,10 +1,10 @@
 import './index.scss';
 
-import { System, World, SystemData, Read } from '@ecs';
+import { Read, System, SystemData, World } from '@ecs';
+import { Vector2 } from 'examples/utils';
 
-import { random } from './random';
-import { Vector2 } from './math';
 import { draw } from './create-circle';
+import { random } from './random';
 
 const config = {
   dotMinRad: 6,

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./build",
-    "target": "es5",
+    "target": "ES6",
     "module": "commonjs",
     "sourceMap": true,
     "declaration": true,
