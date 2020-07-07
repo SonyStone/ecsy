@@ -1,4 +1,4 @@
-import { System, SystemData, Read } from '@ecs';
+import { System, SystemData, Read, Entity } from '@ecs';
 
 import { CanvasContext, Circle, Intersecting, Position } from '../components';
 import { drawLine, fillCircle } from '../utils';
@@ -82,3 +82,4 @@ export class RendererIntersecting implements System {
     }
   }
 }
+

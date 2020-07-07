@@ -125,7 +125,7 @@ class RendererSystem extends System {
   }
 
   drawBox(position) {
-   ctx.beginPath();
+    ctx.beginPath();
     ctx.rect(position.x - SHAPE_HALF_SIZE, position.y - SHAPE_HALF_SIZE, SHAPE_SIZE, SHAPE_SIZE);
     ctx.fillStyle= '#f28d89';
     ctx.fill();

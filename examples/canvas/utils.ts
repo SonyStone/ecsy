@@ -88,5 +88,8 @@ export function fillCircle(ctx, x, y, radius) {
 }
 
 export function drawLine(ctx, a, b, c, d) {
-  ctx.beginPath(), ctx.moveTo(a, b), ctx.lineTo(c, d), ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(a, b);
+  ctx.lineTo(c, d);
+  ctx.stroke();
 }

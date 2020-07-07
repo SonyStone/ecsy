@@ -39,11 +39,13 @@ export class Query {
 
   /**
    * Add the entity only if:
-   * Component is in the query
-   * and Entity has ALL the components of the query
-   * and Entity is not already in the query
+   * * Component is in the query
+   * * and Entity has ALL the components of the query
+   * * and Entity is not already in the query
+   * else:
+   * * remove it
    */
-  addEntityComponent(entity: Entity, componentConstructor: Constructor<Component>): void {
+  updateEntityComponent(entity: Entity, componentConstructor: Constructor<Component>): void {
     const operatorComponent = this.componentConstructors.get(componentConstructor);
 
     if (!operatorComponent || operatorComponent.component instanceof Entity) {
@@ -51,13 +53,6 @@ export class Query {
     }
 
     const isAddEntity = !some(operatorComponent)(({skipEntity}) => skipEntity(entity));
-
-    // console.log(
-    //   `addEntityComponent`, this.key,
-    //   `\nentity`, entity.components,
-    //   `\nComponent`, componentConstructor,
-    //   `\nisAddEntity`, isAddEntity,
-    // );
 
     if (isAddEntity) {
       this.addEntity(entity);

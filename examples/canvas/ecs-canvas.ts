@@ -31,8 +31,11 @@ export class EcsCanvas {
       .registerSystem(MovementSystem)
       .registerSystem(IntersectionSystem)
       .registerSystem(RendererBackground)
+      // .registerSystem(Movement)
+      // .registerSystem(Intersection)
       .registerSystem(RendererCircles)
       .registerSystem(RendererIntersecting)
+      // .registerSystem(Renderer)
       ;
 
     // Used for singleton components
@@ -54,7 +57,7 @@ export class EcsCanvas {
 
     for (let i = 0; i < 200; i++) {
       world.createEntity()
-        .addComponent(Circle, { radius: random(10, 50) })
+        .addComponent(Circle, { radius: random(20, 100) })
         .addComponent(Velocity, {
           x: random(-200, 200),
           y: random(-200, 200),
@@ -86,7 +89,6 @@ export class EcsCanvas {
       world.run();
 
       requestAnimationFrame(update);
-
 
       if (timeOut > 0) {
         timeOut--;

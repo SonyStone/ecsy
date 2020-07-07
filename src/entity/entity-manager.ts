@@ -77,7 +77,7 @@ export class EntityManager {
 
     entity.components.set(componentConstructor.name, component);
 
-    this.queryManager.onEntityComponentAdded(entity, componentConstructor);
+    this.queryManager.onEntityComponentUpdated(entity, componentConstructor);
   }
 
   /**
@@ -113,7 +113,7 @@ export class EntityManager {
     }
 
     // Check each indexed query to see if we need to remove it
-    this.queryManager.onEntityComponentRemoved(entity, componentConstructor);
+    this.queryManager.onEntityComponentUpdated(entity, componentConstructor);
   }
 
   entityRemoveComponentSync(entity: Entity, componentConstructor: Constructor<Component>): void {

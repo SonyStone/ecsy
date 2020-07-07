@@ -12,8 +12,6 @@ export class IntersectionSystem implements System {
 
   run(entities: [Circle, Position, Entity, Intersecting][]) {
 
-    // console.log(`IntersectionSystem`, entities);
-
     for (let i = 0; i < entities.length; i++) {
       const circle = entities[i][0];
       const position = entities[i][1];
@@ -26,9 +24,8 @@ export class IntersectionSystem implements System {
           this.intersectionPool.release(point);
         }
       }
-      // console.log(entity.hasComponent(Intersecting));
 
-      for (let j = 0; j < entities.length; j++) {
+      for (let j = i + 1; j < entities.length; j++) {
         const circleB = entities[j][0];
         const positionB = entities[j][1];
 

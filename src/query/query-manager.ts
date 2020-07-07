@@ -33,46 +33,16 @@ export class QueryManager {
 
   /**
    * Callback when a component is added to an entity
+   * Callback when a component is removed from an entity
    * @param entity Entity that just got the new component
    * @param componentConstructor Component added to the entity
    */
-  onEntityComponentAdded(entity: Entity, componentConstructor: Constructor<Component>): void {
+  onEntityComponentUpdated(entity: Entity, componentConstructor: Constructor<Component>): void {
     // Check each indexed query to see if we need to add this entity to the list
     for (const [_, query] of this.queries) {
-      query.addEntityComponent(entity, componentConstructor);
+      query.updateEntityComponent(entity, componentConstructor);
     }
   }
-
-  /**
-   * Callback when a component is removed from an entity
-   * @param entity Entity to remove the component from
-   * @param componentConstructor Component to remove from the entity
-   */
-  onEntityComponentRemoved(entity: Entity, componentConstructor: Constructor<Component>): void {
-    for (const [_, query] of this.queries) {
-
-      // if ( // not
-      //   !!~query.componentConstructors.indexOf(componentConstructor) &&
-      //   !~query.entities.indexOf(entity) &&
-      //   query.match(entity)
-      // ) {
-      //   query.addEntity(entity);
-      //   continue;
-      // }
-
-      // if (
-      //   query.componentConstructors.has(componentConstructor) &&
-      //   query.entities.has(entity) &&
-      //   !query.match(entity)
-      // ) {
-      //   query.removeEntity(entity);
-      //   continue;
-      // }
-
-    }
-  }
-
-
 
   /**
    * Return some stats from this class
